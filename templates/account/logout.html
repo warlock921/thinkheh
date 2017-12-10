@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}
+    注销用户
+{% endblock title %}
+
+{% block content %}
+    <div class="jumbotron">
+	<div class="row text-center vertical-middle-sm">
+		<p>您已经注销成功！</p>
+		<p>你可以<a href="{% url 'account:user_login' %}">再次登录</a></p>
+	</div>
+</div>
+{% endblock content %}

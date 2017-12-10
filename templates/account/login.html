@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}
+	用户登录
+{% endblock title %}
+{% block content %}
+<div class="jumbotron">
+	<div class="row text-center vertical-middle-sm">
+		<h1>用户登录</h1>
+		<p>请输入您的用户名和密码</p>
+		<form class="form-horizontal" action="." method="post">
+			{% csrf_token %}
+			<!-- {{form.as_p}} -->
+			<div class="form-group">
+				<label for="{{form.username.id_for_label}}" class="col-md-5 control-label" style="color: red"><span class="glyphicon glyphicon-user">用户名</span></label>
+				<div class="col-md-6 text-left">{{form.username}}</div>
+			</div>
+			<div class="form-group">
+				<label for="{{form.password.id_for_label}}" class="col-md-5 control-label" style="color: blue"><span class="glyphicon glyphicon-floppy-open">密码</span></label>
+				<div class="col-md-6 text-left">{{form.password}}</div>
+			</div>
+			<input type="submit" name="Login" class="btn btn-primary btn-lg" value="登录">
+		</form>
+	</div>
+</div>
+{% endblock content %}

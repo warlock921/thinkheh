@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}
+    红企家园
+{% endblock title %}
+{% block content %}
+    <div class="jumbotron">
+        <div class="container">
+            <h1>红企家园</h1>
+            <p>红河州中小企业窗口服务平台</p>
+            <p><a class="btn btn-primary btn-lg" href="#" role="button">了解更多 &raquo;</a></p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            {% for mainsite in mainsite_set %}
+                <div class="container">
+                    <h4><a href="{{mainsite.id}}">{{mainsite.title}}</a></h4>
+                    <p><a class="btn btn-default" href="{{mainsite.id}}" role="button">阅读 &raquo;</a></p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock content %}

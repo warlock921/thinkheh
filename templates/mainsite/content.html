@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}
+    红企家园文章页面
+{% endblock title %}
+{% block content %}
+
+    <div class="jumbotron">
+        <div class="container">
+            <h2>{{article.title}}</h2>
+            <p><span>{{article.author.username}}</span><span style="margin-left:20px">{{publish}}</span></p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12"> 
+            <div>{{article.body}}</div>
+        </div>
+    </div>
+{% endblock content %}
