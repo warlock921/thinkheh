@@ -16,8 +16,9 @@
 		  <a href="#">{{ user.username }}</a>
 		  <a href="{% url 'account:user_logout' %}">注销</a>
 		{% else %}
-            	<a href="{% url 'account:user_login' %}" class="btn btn-success" role="button">登录</a>
-             {% endif %}
+      <a href="{% url 'account:user_login' %}" class="btn btn-success" role="button">登录</a>
+      <a href="{% url 'account:user_register' %}" class="btn btn-success" role="button">注册</a>
+     {% endif %}
 	   </div>
         </div><!--/.navbar-collapse -->
       </div>

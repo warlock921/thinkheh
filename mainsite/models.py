@@ -10,6 +10,8 @@ class BlogArticles(models.Model):
 
 	class Meta:
 		ordering = ("-publish",)
+		verbose_name = "文章管理"
+		verbose_name_plural = "文章管理"
 
 	def __str__(self):
 		return self.title
