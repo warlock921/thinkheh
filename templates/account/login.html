@@ -16,7 +16,9 @@
 			</div>
 			<div class="form-group">
 				<label for="{{form.password.id_for_label}}" class="col-md-5 control-label" style="color: blue"><span class="glyphicon glyphicon-floppy-open">密码</span></label>
-				<div class="col-md-6 text-left">{{form.password}}</div>
+				<div class="col-md-6 text-left">
+				<input type="textarea" name="password" for="{{form.password}}">
+				</div>
 			</div>
 			<input type="submit" name="Login" class="btn btn-primary btn-lg" value="登录">
 		</form>
