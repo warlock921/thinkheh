@@ -2,20 +2,30 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth import authenticate,login
 from .forms import LoginForm,RegistrationForm,UserProfileForm
+from django.contrib.auth.models import User
 
 def register(request):
 	if request.method == "POST":
 		user_form = RegistrationForm(request.POST)
 		userprofile_form = UserProfileForm(request.POST)
+		
 		if user_form.is_valid()*userprofile_form.is_valid():
-			new_user = user_form.save(commit=False)
-			new_user.set_password(user_form.cleaned_data['password'])
-			new_user.save()
+			#读取用户输入的email地址
+			is_new_email = request.POST.get('email','')
+			#判断邮件是否重复注册
+			if User.objects.filter(email=is_new_email):
+				#如果邮件重复，不允许注册，中断注册流程
+				return render(request, "account/register.html", {'msg': '邮件重复，请更换其他邮件地址!', 'form':user_form, 'profile':userprofile_form})
+			#如果不重复，存入数据库
+			else:
+				new_user = user_form.save(commit=False)
+				new_user.set_password(user_form.cleaned_data['password'])
+				new_user.save()
 
-			new_userprofile = userprofile_form.save(commit=False)
-			new_userprofile.user = new_user 
-			new_userprofile.save()
-			return HttpResponse("操作成功")
+				new_userprofile = userprofile_form.save(commit=False)
+				new_userprofile.user = new_user 
+				new_userprofile.save()
+				return HttpResponse("操作成功")
 		else:
 			return HttpResponse("对不起，您不能注册！")
 	else:

@@ -14,6 +14,7 @@ class LoginForm(forms.Form):
 	password = forms.CharField(widget=forms.PasswordInput)
 
 class RegistrationForm(forms.ModelForm):
+	# email = forms.EmailField(label="Email", widget=forms.EmailInput)
 	password = forms.CharField(label="Password", widget=forms.PasswordInput)
 	password2 = forms.CharField(label="Confirm Password", widget=forms.PasswordInput)
 

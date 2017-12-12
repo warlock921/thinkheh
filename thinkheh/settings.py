@@ -84,7 +84,7 @@ DATABASES = {
         'NAME': 'thinkheh',
         'USER': 'root',
         'PASSWORD': 'P@ssword',
-        "HOST": "localhost",
+        "HOST": "192.168.10.201",
 
     }
 }
@@ -154,3 +154,13 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR,"static")
 ]
+
+#发送的验证邮件配置
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_HOST_USER = "840246464@qq.com"
+EMAIL_HOST_PASSWORD = "vudbntmpjlnnbdbg"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = "840246464@qq.com"
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
