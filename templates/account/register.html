@@ -14,19 +14,19 @@
 
 	<form class="form-horizontal" action="." method="post">{% csrf_token %}
 		<div class="form-group">
-			<label for="{{form.username.id_for_label}}" class="col-md-5 control-label">Username</label>
-			<div class="col-md-6 text-left">{{form.username}}</div>
+			<label for="{{form.username.id_for_label}}" class="col-md-5 control-label">用户名</label>
+			<div class="col-md-6 text-left">{{form.username}} <font color="red">{{msg2}}</font></div>
 		</div>
 		<div class="form-group">
-			<label for="{{form.email.id_for_label}}" class="col-md-5 control-label">Email</label>
+			<label for="{{form.email.id_for_label}}" class="col-md-5 control-label">电子邮件地址</label>
 			<div class="col-md-6 text-left">{{form.email}} <font color="red">{{msg}}</font> </div>
 		</div>
 		<div class="form-group">
-			<label for="{{form.password.id_for_label}}" class="col-md-5 control-label">Password</label>
+			<label for="{{form.password.id_for_label}}" class="col-md-5 control-label">密码</label>
 			<div class="col-md-6 text-left">{{form.password}}</div>
 		</div>
 		<div class="form-group">
-			<label for="{{form.password.id_for_label}}" class="col-md-5 control-label">Comfirm Password</label>
+			<label for="{{form.password.id_for_label}}" class="col-md-5 control-label">确认密码</label>
 			<div class="col-md-6 text-left">{{form.password2}}</div>
 		</div>
 		<!-- <div class="form-group">
@@ -38,11 +38,11 @@
 			<div class="col-md-6 text-left">{{profile.company_name}}</div>
 		</div> -->
 		<div class="form-group">
-			<label for="{{profile.birth.id_for_label}}" class="col-md-5 control-label">Your Birthday</label>
+			<label for="{{profile.birth.id_for_label}}" class="col-md-5 control-label">生日</label>
 			<div class="col-md-6 text-left">{{profile.birth}}</div>
 		</div>
 		<div class="form-group">
-			<label for="{{profile.phone.id_for_label}}" class="col-md-5 control-label">Your Phone</label>
+			<label for="{{profile.phone.id_for_label}}" class="col-md-5 control-label">手机</label>
 			<div class="col-md-6 text-left">{{profile.phone}}</div>
 		</div>
 		<input type="submit" class="btn btn-primary btn-lg" value="提交注册">

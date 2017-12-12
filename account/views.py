@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth import authenticate,login
+from django.contrib.auth.decorators import login_required
+from .models import UserInfo,UserProfile 
 from .forms import LoginForm,RegistrationForm,UserProfileForm
 from django.contrib.auth.models import User
 
@@ -25,7 +27,8 @@ def register(request):
 				new_userprofile = userprofile_form.save(commit=False)
 				new_userprofile.user = new_user 
 				new_userprofile.save()
-				return HttpResponse("操作成功")
+				UserInfo.objects.create(user=new_user)
+				return render(request, "registration/login.html", { 'form':user_form })
 		else:
 			return HttpResponse("对不起，您不能注册！")
 	else:
@@ -49,4 +52,11 @@ def user_login(request):
 	if request.method == "GET":
 		login_form = LoginForm()
 		return render(request, "account/login.html", {"form":login_form})
+
+@login_required(login_url='/account/login')
+def myself(request):
+	user = User.objects.get(username=request.user.username)
+	userprofile = UserProfile.objects.get(user=user)
+	userinfo = UserInfo.objects.get(user=user)
+	return render(request, "account/myself.html", {"user":user, "userinfo":userinfo, "userprofile":userprofile})
 

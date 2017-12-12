@@ -23,5 +23,7 @@
 			<input type="submit" name="Login" class="btn btn-primary btn-lg" value="登录">
 		</form>
 	</div>
+	<p style="margin-top: 10px">忘记了密码？可以<a href="{% url 'account:password-reset' %}">重置密码</a></p>
+	<p style="margin-top: 10px">如果你还没有注册，可以<a href="{% url 'account:user_login' %}">点击这里注册</a></p>
 </div>
 {% endblock content %}
