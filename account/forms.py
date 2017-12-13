@@ -31,7 +31,7 @@ class RegistrationForm(forms.ModelForm):
 class UserProfileForm(forms.ModelForm):
 	class Meta:
 		model = UserProfile
-		fields = ("phone","birth")
+		fields = ("birth","phone")
 
 class UserInfoForm(forms.ModelForm):
 	class Meta:

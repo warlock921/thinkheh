@@ -18,15 +18,15 @@ class UserProfile(models.Model):
 class UserInfo(models.Model):
 	user = models.OneToOneField(User,unique=True)
 	#公司名称
-	company = models.CharField(max_length=100, blank=True)
+	company = models.CharField(max_length=100,null=True)
 	#社会统一信用代码
-	SUC_code = models.CharField(max_length=18, unique=True, blank=True)
+	SUC_code = models.CharField(max_length=18,null=True)
 	#职业
-	profession = models.CharField(max_length=100, blank=True)
+	profession = models.CharField(max_length=100,null=True)
 	#地址
-	address = models.CharField(max_length=100, blank=True)
+	address = models.CharField(max_length=100,null=True)
 	#自我介绍
-	aboutme = models.TextField(blank=True)
+	aboutme = models.TextField(null=True)
 
 	class Meta:
 		verbose_name = "用户信息管理"
