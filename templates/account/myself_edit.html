@@ -4,7 +4,7 @@
 {% endblock title %}
 {% block content %}
 	<div class="row text-center vertical-middle-sm">
-		<h1>个人中心-个人信息编辑</h1>
+		<h1>{{user.username}}--信息编辑</h1>
 		<div class="row">
 			<div class="col-md-6">
 				<form class="form-horizontal" action="." method="post">{% csrf_token %}
@@ -17,6 +17,10 @@
 						<div class="col-md-8 text-left">{{user_form.email}}</div>
 					</div>
 					<div class="row">
+						<div class="col-md-4 text-right"><span>性别：</span></div>
+						<div class="col-md-8 text-left">{{userprofile_form.sex}}</div>
+					</div>
+					<div class="row">
 						<div class="col-md-4 text-right"><span>生日：</span></div>
 						<div class="col-md-8 text-left">{{userprofile_form.birth}}</div>
 					</div>
@@ -25,12 +29,16 @@
 						<div class="col-md-8 text-left">{{userprofile_form.phone}}</div>
 					</div>
 					<div class="row">
+						<div class="col-md-4 text-right"><span>注册类型：</span></div>
+						<div class="col-md-8 text-left">{{userprofile_form.company_or_person}}</div>
+					</div>
+					<div class="row">
 						<div class="col-md-4 text-right"><span>工作单位：</span></div>
 						<div class="col-md-8 text-left">{{userinfo_form.company}}</div>
 					</div>
 					<div class="row">
 						<div class="col-md-4 text-right"><span>社会统一信用代码：</span></div>
-						<div class="col-md-8 text-left">{{userinfo_form.SUC_code}}<font color="red">{{msg}}</font></div>
+						<div class="col-md-8 text-left">{{userinfo_form.SUC_code}}  <font color="red">{{msg}}</font></div>
 					</div>
 					<div class="row">
 						<div class="col-md-4 text-right"><span>职业：</span></div>

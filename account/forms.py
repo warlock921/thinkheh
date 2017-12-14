@@ -29,9 +29,11 @@ class RegistrationForm(forms.ModelForm):
 		return cd['password2']
 
 class UserProfileForm(forms.ModelForm):
+	birth = forms.DateField(widget=forms.TextInput(attrs={'class':'input'}))
+	phone = forms.CharField(widget=forms.TextInput(attrs={'class':'input'}))
 	class Meta:
 		model = UserProfile
-		fields = ("birth","phone")
+		fields = ("birth","phone","sex","company_or_person")
 
 class UserInfoForm(forms.ModelForm):
 	class Meta:
