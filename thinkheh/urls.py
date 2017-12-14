@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^mainsite/', include('mainsite.urls', namespace='mainsite', app_name='mainsite')),
     url(r'^account/',include('account.urls', namespace='account', app_name='account')),
+    url(r'^article/',include('article.urls', namespace='article', app_name='article')),
 ]

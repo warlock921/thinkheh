@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'mainsite',
     'account',
+    'article',
 ]
 
 MIDDLEWARE = [
@@ -84,7 +85,7 @@ DATABASES = {
         'NAME': 'thinkheh',
         'USER': 'root',
         'PASSWORD': 'P@ssword',
-        "HOST": "192.168.10.201",
+        "HOST": "localhost",
 
     }
 }
