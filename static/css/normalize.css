@@ -24,7 +24,8 @@ html {
  */
 
 body {
-  margin: 0;
+  padding: 80px;
+  margin: 10px;
 }
 
 /**
@@ -256,6 +257,7 @@ textarea {
 
 button,
 input { /* 1 */
+  margin-top: 10px;
   overflow: visible;
 }
 
