@@ -19,8 +19,12 @@ def article_column(request):
 	if request.method == "POST":
 		column_name = request.POST['column']
 		columns = AriticleColumn.objects.filter(user_id=request.user.id,column=column_name)
+		columns_re = AriticleColumn.objects.filter(user=request.user)
 		if columns:
 			return HttpResponse('2')
+		#判断是否超过5个(含5个)标签
+		elif(columns_re.count()>=5):
+			return HttpResponse('3')
 		else:
 			AriticleColumn.objects.create(user=request.user, column=column_name)
 			return HttpResponse("1")
@@ -89,6 +93,17 @@ def article_detail(request,id,slug):
 	return render(request, "article/column/article_detail.html", {"article":article})
 
 
+@login_required(login_url='/account/login')
+@require_POST
+@csrf_exempt
+def del_article(request):
+	article_id = request.POST['article_id']
+	try:
+		article = AriticlePost.objects.get(id=article_id)
+		article.delete()
+		return HttpResponse("1")
+	except Exception as e:
+		return HttpResponse("2")
 
 
 

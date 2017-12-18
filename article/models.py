@@ -7,25 +7,25 @@ from slugify import slugify
 #栏目设置数据库模型
 class AriticleColumn(models.Model):
 	user = models.ForeignKey(User,verbose_name='创建者', related_name = 'article_column')
-	column = models.CharField(verbose_name='栏目',max_length=200)
+	column = models.CharField(verbose_name='话题标签名称',max_length=200)
 	created = models.DateField(verbose_name='创建日期',auto_now_add=True)
 
 	def __str__(self):
 		return self.column
 
 	class Meta:
-		verbose_name = "栏目管理"
-		verbose_name_plural = "栏目管理"
+		verbose_name = "话题标签管理"
+		verbose_name_plural = "话题标签管理"
 
-#栏目文章发送数据库模型
+#栏目文章发布-数据库模型
 class AriticlePost(models.Model):
 	author = models.ForeignKey(User,verbose_name="作者",related_name="article")
-	title = models.CharField(verbose_name="文章标题", max_length=200)
+	title = models.CharField(verbose_name="话题名称", max_length=200)
 	#重要的标志
-	slug = models.SlugField(verbose_name="段塞", max_length=500)
-	column = models.ForeignKey(AriticleColumn, verbose_name="栏目标题ID", related_name="article_column")
-	body = models.TextField(verbose_name="文章内容")
-	created = models.DateTimeField(verbose_name="创建日期", default=timezone.now())
+	slug = models.SlugField(verbose_name="地址", max_length=500)
+	column = models.ForeignKey(AriticleColumn, verbose_name="话题标签名称", related_name="article_column")
+	body = models.TextField(verbose_name="话题内容")
+	created = models.DateTimeField(verbose_name="创建日期", default=timezone.now)
 	updated = models.DateTimeField(verbose_name="更新日期", auto_now=True)
 	
 	class Meta:

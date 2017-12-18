@@ -1,15 +1,15 @@
 {% extends "article/base.html" %}
 {% load staticfiles %}
 {% block title %}
-   栏目管理
+   话题标签管理
 {% endblock title %}
 {% block content %}
 <div>
-	<p class="text-right"><button class="btn btn-success" id="add_column" onclick="add_column()">添加栏目</button></p>
+	
 	<table class="table table-hover">
 		<tr>
 			<td>序号</td>
-			<td>栏目名称</td>
+			<td>话题标签名称</td>
 			<td>操作</td>
 		</tr>
 		{% for column in columns %}
@@ -19,12 +19,16 @@
 				<td>
 					<a name="edit" href="javascript:" onclick="edit_column(this,{{ column.id }})"><span class="glyphicon glyphicon-pencil"></span></a>
 					<a name="delete" href="javascript:" onclick="del_column(this,{{ column.id }})"><span class="glyphicon glyphicon-trash" style="margin-left: 20px;"></span></a>
+					<a id="add_column" href="javascript:" onclick="add_column()"><span class="glyphicon glyphicon-plus" style="margin-left: 20px;"></span></a>
 				</td>
+				<!-- <td><a type="button" class="btn btn-success" id="add_column" onclick="add_column()">添加话题标签</a></td> -->
 			</tr>
 			{% empty %}
-			<p>还没有设置栏目，太懒了</p>
+			<p>还没有设置话题标签，太懒了</p>
 		{% endfor %}
 	</table>
+	
+
 </div>
 <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/layer.js' %}"></script>
@@ -33,9 +37,9 @@ function add_column(){
     var index = layer.open({
 	type:1,
 	skin:"layui-layer-git",
-	area: ["400px", "200px"],
-	title: "新增栏目",
-	content: '<div class="text-center" style="margin-top:20px"><p>请输入新的栏目名称</p><p>{{column_form.column}}</p></div>',
+	area: ["400px", "220px"],
+	title: "新增话题标签",
+	content: '<div class="text-center" style="margin-top:20px"><p>请输入新的话题标签名称</p><p>最多可以添加 5 个标签</p><p>{{column_form.column}}</p></div>',
 	btn:['确定', '取消'],
 	yes: function(index, layero){
 	    column_name = $('#id_column').val();
@@ -46,9 +50,11 @@ function add_column(){
 		success:function(e){
 		    if(e=="1"){
 		    	parent.location.reload();
-		    	layer.msg("good");
+		    	layer.msg("添加成功！");
+		    }else if(e=="3"){
+		    	layer.msg("无法添加更多标签！")
 		    }else{
-		        layer.msg("此栏目已有，请更换名称")
+		       layer.msg("此话题标签已有，请更换名称")
 		    }
 		},
 	    });
@@ -65,8 +71,8 @@ function edit_column(the, column_id){
 				type:1,
 		skin:"layui-layer-git",
 		area:["400px","200px"],
-		title:"编辑栏目",
-		content:'<div class="text-center" style="margin-top:20px"><p>请编辑栏目的名称</p><p><input type="text" id="new_name" value="'+name+'"></p></div>',
+		title:"编辑话题标签",
+		content:'<div class="text-center" style="margin-top:20px"><p>请编辑话题标签名称</p><p><input type="text" id="new_name" value="'+name+'"></p></div>',
 		btn:['确定','取消'],
 		yes:function(index, layero){
 			new_name = $('#new_name').val();
@@ -79,7 +85,7 @@ function edit_column(the, column_id){
 						parent.location.reload();
 						layer.msg("成功！");
 					}else{
-						layer.msg("新的名称没有保存，修改失败！")
+						layer.msg("新的标签名称没有保存，修改失败！")
 					}
 				},
 			});
@@ -93,8 +99,8 @@ function del_column(the, column_id){
 		type:1,
 		skin:"layui-layer-git",
 		area:["400px","200px"],
-		title:"删除项目",
-		content:'<div class="text-center" style="margin-top:20px"><p>是否确定删除{'+name+'}栏目</p></div>',
+		title:"删除话题标签",
+		content:'<div class="text-center" style="margin-top:20px"><p>是否确定删除{'+name+'}话题标签</p></div>',
 		btn:['确定','取消'],
 		yes: function(){
 			$.ajax({
@@ -104,7 +110,7 @@ function del_column(the, column_id){
 				success: function(e){
 					if(e=="1"){
 						parent.location.reload();
-						layer.msg("已经删除所选项目");
+						layer.msg("已经删除所选话题标签");
 					}else{
 						layer.msg("删除失败");
 					}

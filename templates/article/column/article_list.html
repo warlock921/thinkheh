@@ -1,7 +1,9 @@
 {% extends "article/base.html" %}
 
+{% load staticfiles %}
+
 {% block title %}
-    文章列表
+    话题列表
 {% endblock title %}
 
 {% block content %}
@@ -10,8 +12,8 @@
 		<table class="table table-hover">
 			<tr>
 				<td>序号</td>
-				<td>标题</td>
-				<td>栏目</td>
+				<td>话题</td>
+				<td>话题标签</td>
 				<td>操作</td>
 			</tr>
 			{% for article in articles %}
@@ -19,10 +21,42 @@
 					<td>{{ forloop.counter }}</td>
 					<td><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></td>
 					<td>{{ article.column}}</td>
-					<td>--</td>
+					<td>
+					<!-- <a name="edit" href="javascript:" onclick="edit_column(this,{{ column.id }})"><span class="glyphicon glyphicon-pencil"></span></a> -->
+					<a name="delete" href="javascript:" onclick="del_article(this,{{ article.id }})"><span class="glyphicon glyphicon-trash" style="margin-left: 20px;"></span></a>
+					</td>
 				</tr>
 			{% endfor %}
 		</table>
 	</div>
-
+<script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/layer.js' %}"></script>
+<script type="text/javascript">
+	function del_article(the,article_id){
+		var article_name = $(the).parents("tr").children("td").eq(1).text();
+		layer.open({
+			type:1,
+			skin:"layui-layer-git",
+			area:["400px","200px"],
+			title:"删除话题",
+			content:'<div class="text-center" style="margin-top:20px"><p>是否确定删除《'+article_name+'》<p></div>',
+			btn:['确定','取消'],
+			yes:function(){
+				$.ajax({
+				  url:'{% url "article:del_article" %}',
+				  type:"POST",
+				  data:{"article_id":article_id},
+				  success:function(e){
+				  	if(e=="1"){
+				  		parent.location.reload();
+				  		layer.msg("删除成功！");
+				  	}else{
+				  		layer.msg("删除失败！");
+				  	}
+				  },
+				})
+			},
+		});
+	}
+</script>
 {% endblock content %}
