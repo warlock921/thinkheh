@@ -1,0 +1,22 @@
+@charset "UTF-8";
+/**
+ * 
+ * @authors Your Name (you@example.org)
+ * @date    2017-12-18 11:38:43
+ * @version $Id$
+ */
+
+ #layout {
+ 	text-align: left;
+ }
+
+ #layout > header, .btns{
+ 	padding: 15px 0;
+ 	width: 90%;
+ 	margin: 0 auto;
+ }
+
+ #layout > header > h1 {
+ 	font-size: 20px;
+ 	margin-bottom: 10px;
+ }

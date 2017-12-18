@@ -6,10 +6,16 @@
 # @Version : $Id$
 
 from django import forms 
-from .models import AriticleColumn
+from .models import AriticleColumn,AriticlePost
 
 class AriticleColumnForm(forms.ModelForm):
 	class Meta:
 		model = AriticleColumn 
 		fields = ("column",)
+
+class AriticlePostForm(forms.ModelForm):
+	class Meta:
+		model = AriticlePost
+		fields = ("title", "body")
+		
 		
