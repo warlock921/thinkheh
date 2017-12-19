@@ -3,11 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .forms import AriticleColumnForm,AriticlePostForm
 from .models import AriticleColumn,AriticlePost
 
-#文章列表视图
+#话题标签视图
 @login_required(login_url='/account/login')
 @csrf_exempt
 def article_column(request):
@@ -29,7 +30,7 @@ def article_column(request):
 			AriticleColumn.objects.create(user=request.user, column=column_name)
 			return HttpResponse("1")
 
-#重命名文章列表名称视图
+#重命名话题标签视图
 @login_required(login_url='/account/login')
 @require_POST
 @csrf_exempt
@@ -44,7 +45,7 @@ def rename_article_column(request):
 	except:
 		return HttpResponse("0")
 
-#删除文章别表名称视图
+#删除话题标签视图
 @login_required(login_url='/account/login')
 @require_POST
 @csrf_exempt
@@ -57,7 +58,7 @@ def del_article_column(request):
 	except:
 		return HttpResponse("2")
 
-#发表文章视图
+#发布话题视图
 @login_required(login_url='/account/login')
 @csrf_exempt
 def article_post(request):
@@ -80,19 +81,30 @@ def article_post(request):
 		article_columns = request.user.article_column.all()
 		return render(request, "article/column/article_post.html", {"article_post_form":article_post_form, "article_columns":article_columns})
 
-#文章列表视图
+#已发布话题列表视图
 @login_required(login_url='/account/login')
 def article_list(request):
-	articles = AriticlePost.objects.filter(author=request.user)
-	return render(request, "article/column/article_list.html", {"articles":articles})
+	articles_list = AriticlePost.objects.filter(author=request.user)
+	paginator = Paginator(articles_list,5)
+	page = request.GET.get('page')
+	try:
+		current_page = paginator.page(page)
+		articles = current_page.object_list
+	except PageNotAnInteger:
+		current_page = paginator.page(1)
+		articles = current_page.object_list
+	except EmptyPage:
+		current_page = paginator.page(paginator.num_pages)
+		articles = current_page.object_list
+	return render(request, "article/column/article_list.html", {"articles":articles, "page":current_page})
 
-#显示文章视图
+#显示话题正文视图
 @login_required(login_url='/account/login')
 def article_detail(request,id,slug):
 	article = get_object_or_404(AriticlePost, id=id, slug=slug)
 	return render(request, "article/column/article_detail.html", {"article":article})
 
-
+#删除话题视图
 @login_required(login_url='/account/login')
 @require_POST
 @csrf_exempt
@@ -105,7 +117,24 @@ def del_article(request):
 	except Exception as e:
 		return HttpResponse("2")
 
+#编辑话题视图
+@login_required(login_url='/account/login')
+@csrf_exempt
+def redit_article(request,article_id):
+	if request.method == "GET":
+		article_columns = request.user.article_column.all()
+		article = AriticlePost.objects.get(id=article_id)
+		this_article_form = AriticlePostForm(initial={"title":article.title})
+		this_article_column = article_column
+		return render(request, "article/column/redit_article.html", {"article":article, "article_columns":article_columns, "this_article_column":this_article_column, "this_article_form":this_article_form})
 
-
-
-
+	else:
+		redit_article = AriticlePost.objects.get(id=article_id)
+		try:
+			redit_article.column = request.user.article_column.get(id=request.POST['column_id'])
+			redit_article.title = request.POST['title']
+			redit_article.body = request.POST['body']
+			redit_article.save()
+			return HttpResponse("1")
+		except Exception as e:
+			return HttpResponse("2")
