@@ -85,7 +85,7 @@ DATABASES = {
         'NAME': 'thinkheh',
         'USER': 'root',
         'PASSWORD': 'P@ssword',
-        "HOST": "localhost",
+        "HOST": "192.168.10.201",
 
     }
 }
@@ -165,3 +165,5 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = "840246464@qq.com"
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+MEDIA_URL = '/static/image_upload/'
+MEDIA_ROOT = os.path.join(BASE_DIR,"static/image_upload/").replace('\\','/')

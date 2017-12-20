@@ -1,9 +1,16 @@
+import json
+import os
 from django.shortcuts import render,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
+from django.utils import timezone
+from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 from .forms import AriticleColumnForm,AriticlePostForm
 from .models import AriticleColumn,AriticlePost
@@ -32,7 +39,7 @@ def article_column(request):
 
 #重命名话题标签视图
 @login_required(login_url='/account/login')
-@require_POST
+@require_POST       #这里表示只接受POST事件
 @csrf_exempt
 def rename_article_column(request):
 	column_name = request.POST["column_name"]
@@ -47,7 +54,7 @@ def rename_article_column(request):
 
 #删除话题标签视图
 @login_required(login_url='/account/login')
-@require_POST
+@require_POST       #这里表示只接受POST事件
 @csrf_exempt
 def del_article_column(request):
 	column_id = request.POST['column_id']
@@ -106,7 +113,7 @@ def article_detail(request,id,slug):
 
 #删除话题视图
 @login_required(login_url='/account/login')
-@require_POST
+@require_POST   #这里表示只接受POST事件
 @csrf_exempt
 def del_article(request):
 	article_id = request.POST['article_id']
@@ -138,3 +145,41 @@ def redit_article(request,article_id):
 			return HttpResponse("1")
 		except Exception as e:
 			return HttpResponse("2")
+
+#富文本编辑器图片上传处理
+@login_required(login_url='/account/login')
+@csrf_exempt
+def editor_image_upload(request):
+	response_data = {}
+	if request.method == "POST":
+		upload_image_file = request.FILES.get('editormd-image-file')
+		#print(upload_image_file.name,upload_image_file.size)
+		#取文件的扩展名
+		file_ext = os.path.splitext(upload_image_file.name)[1]
+		new_upload_image_file = timezone.now().strftime('%Y%m%d%H%M%S') + file_ext
+		print(new_upload_image_file)
+		if not upload_image_file:
+			response_data['success'] = 0
+			response_data['message'] = u'图片格式异常'
+			return HttpResponse(json.dumps(response_data),content_type="application/json")
+		else:
+			if upload_image_file.size < 5242880 :
+				#按年和按日期建立图片文件夹
+				up_year = timezone.now().strftime('%Y')
+				up_date = timezone.now().strftime('%m')+"-"+timezone.now().strftime('%d')
+				#上传图片至服务器
+				img_url = default_storage.save("editor_images"+"/"+up_year+"/"+up_date+"/"+new_upload_image_file,ContentFile(upload_image_file.read()))
+				tmp_file = os.path.join(settings.MEDIA_ROOT,img_url).replace('\\','/')
+				# upload_image_file.save(os.path.join(settings.BASE_DIR,'static/editor_up_load/%Y/%m/%d',new_upload_image_file))
+				print(img_url)
+				print(tmp_file)
+
+				response_data['success'] = 1
+				response_data['message'] = u'上传成功'
+				response_data['url'] = settings.MEDIA_ROOT+img_url
+				#response_data = {'success':1,'message':"上传成功",'url':'http://www.thinkheh.cn'}  ----样例
+				return HttpResponse(json.dumps(response_data),content_type="application/json")
+			else:
+				response_data['success'] = 0
+				response_data['message'] = u'图片大小超过 5 Mb'
+				return HttpResponse(json.dumps(response_data),content_type="application/json")

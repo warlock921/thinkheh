@@ -93,7 +93,7 @@
 
                 imageUpload : true,
                 imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
-                imageUploadURL : "{% static 'editor_up_load/images' %}",
+                imageUploadURL : "{% url 'article:editor_image_upload' %}",
 
                 /*上传图片成功后可以做一些自己的处理*/
                 // onload: function () {
