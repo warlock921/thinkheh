@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.utils import timezone
 from django.conf import settings
+from slugify import slugify
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.core.files.storage import default_storage
@@ -148,6 +149,7 @@ def redit_article(request,article_id):
 
 #富文本编辑器图片上传处理
 @login_required(login_url='/account/login')
+@require_POST   #这里表示只接受POST事件
 @csrf_exempt
 def editor_image_upload(request):
 	response_data = {}
@@ -164,19 +166,19 @@ def editor_image_upload(request):
 			return HttpResponse(json.dumps(response_data),content_type="application/json")
 		else:
 			if upload_image_file.size < 5242880 :
-				#按年和按日期建立图片文件夹
+				#按年和按日期建立图片文件夹，文件夹不存在，会自动创建
 				up_year = timezone.now().strftime('%Y')
 				up_date = timezone.now().strftime('%m')+"-"+timezone.now().strftime('%d')
-				#上传图片至服务器
-				img_url = default_storage.save("editor_images"+"/"+up_year+"/"+up_date+"/"+new_upload_image_file,ContentFile(upload_image_file.read()))
-				tmp_file = os.path.join(settings.MEDIA_ROOT,img_url).replace('\\','/')
+				#组装图片路径并上传图片至服务器
+				img_url = default_storage.save("editor_images"+"/"+request.user.username+"/"+up_year+"/"+up_date+"/"+new_upload_image_file,ContentFile(upload_image_file.read()))
+				# tmp_file = os.path.join(settings.MEDIA_ROOT,img_url).replace('\\','/')	  #调试信息
 				# upload_image_file.save(os.path.join(settings.BASE_DIR,'static/editor_up_load/%Y/%m/%d',new_upload_image_file))
-				print(img_url)
-				print(tmp_file)
-
+				# print(img_url)  #调试信息
+				# print(tmp_file)  #调试信息
 				response_data['success'] = 1
 				response_data['message'] = u'上传成功'
-				response_data['url'] = settings.MEDIA_ROOT+img_url
+				#这里非常重要，路径一定不能修改，否则无法正常显示图片
+				response_data['url'] = '/static/image_upload/'+img_url
 				#response_data = {'success':1,'message':"上传成功",'url':'http://www.thinkheh.cn'}  ----样例
 				return HttpResponse(json.dumps(response_data),content_type="application/json")
 			else:

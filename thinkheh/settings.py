@@ -85,7 +85,7 @@ DATABASES = {
         'NAME': 'thinkheh',
         'USER': 'root',
         'PASSWORD': 'P@ssword',
-        "HOST": "192.168.10.201",
+        "HOST": "localhost",
 
     }
 }
@@ -155,6 +155,10 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR,"static")
 ]
+STATICFILES_FINDERS = (  
+    'django.contrib.staticfiles.finders.FileSystemFinder',  
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',  
+)  
 
 #发送的验证邮件配置
 EMAIL_HOST = 'smtp.qq.com'
