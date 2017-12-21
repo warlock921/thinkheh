@@ -1,90 +1,92 @@
 {% extends "base.html" %}
-
 {% load staticfiles %}
-
 {% block title %}
 	{{article.title}}
 {% endblock title %}
-
 {% block content %}
-
-{% with total_likes=article.users_like.count users_like=article.users_like.all %}
-    
-<div>
-	<header>
-		<h1>{{ article.title }}</h1>
-		<p>
-			<a type="button" class="btn btn-success btn-big" onclick="like_article({{article.id}},'{{users_like}}','like')" href="#" data-toggle="tooltip" data-placement="up" title="喜欢这个问题就点个赞">点赞</a>
-			<a type="button" class="btn btn-warning btn-big" onclick="like_article({{article.id}},'{{users_like}}','unlike')" href="#" data-toggle="tooltip" data-placement="up" title="不喜欢这个问题就点我">我不喜欢</a>
-			<a type="button" class="btn btn-info btn-big"> {{ total_likes }} 人点赞</a>
-			<table>
-				<tr>
-					<th>点赞此问题的用户</th>
-				</tr>
-				<tr>
-					{% for user in article.users_like.all %}
-						<td class="text-left"><span class="label label-default">{{user.username}}</span></td>
-					{% empty %}
-						<td><span class="label label-default">还没有人对此问题表态</span></td>
+	{% with total_likes=article.users_like.count users_like=article.users_like.all %}
+	<div class="container">
+		<div class="col-md-9">
+			<div>
+				<header>
+					<h1>{{ article.title }}</h1>
+					<p>
+						<a type="button" class="btn btn-success btn-big" onclick="like_article({{article.id}},'like')" href="#" data-toggle="tooltip" data-placement="up" title="喜欢这个问题就点个赞">点赞</a>
+						<a type="button" class="btn btn-warning btn-big" onclick="like_article({{article.id}},'unlike')" href="#" data-toggle="tooltip" data-placement="up" title="不喜欢这个问题就点我">我不喜欢</a>
+						<a type="button" class="btn btn-info btn-big"> {{ total_likes }} 人点赞</a>
+						<a type="button" class="btn btn-info btn-big"> {{ total_views }} 人浏览</a>
+						<table>
+							<tr>
+								<th>点赞此问题的用户</th>
+							</tr>
+							<tr>
+								{% for user in article.users_like.all %}
+									<td class="text-left"><span class="label label-default">{{user.username}}</span></td>
+									{% empty %}
+									<td><span class="label label-default">还没有人对此问题表态</span></td>
+								{% endfor %}
+								
+							</tr>
+						</table>
+					</p>
+					<p>问题所有者：<a type="button" class="btn btn-danger btn-xs" href="{% url 'article:author_articles' article.author.username%}"  data-toggle="tooltip" data-placement="right" title="看此作者的所有问题">{{ article.author.username }}</a></p>
+					问题所属标签：<button type="button" class="btn btn-info btn-xs">{{article.column}}</button>
+				</header>
+				<link rel="stylesheet" href="{% static 'editor/css/editormd.preview.css' %}"/>
+				<div id="editormd-view">
+					<textarea id="append-test" style="display:none;">{{ article.body }}</textarea>
+				</div>
+				<a type="button" class="btn btn-primary btn-block" href="{% url 'article:article_titles' %}">返回问题首页</a>
+			</div>
+		</div>
+		<div class="col-md-3">
+			<p class="text-center"><h3>最受关注的问题<h3></p>
+				<ol class="text-left">
+					{% for article_rank in most_viewed %}
+						<li>
+							<a href="{{ article_rank.get_url_path }}">{{ article_rank.title }}</a>
+						</li>
 					{% endfor %}
-					
-				</tr>
-			</table>
-
-		</p>
-		<p>问题所有者：<a type="button" class="btn btn-danger btn-xs" href="{% url 'article:author_articles' article.author.username%}"  data-toggle="tooltip" data-placement="right" title="看此作者的所有问题">{{ article.author.username }}</a></p>
-		问题所属标签：<button type="button" class="btn btn-info btn-xs">{{article.column}}</button>
-
-	</header>
-	<link rel="stylesheet" href="{% static 'editor/css/editormd.preview.css' %}"/>
-	<div id="editormd-view">
-		<textarea id="append-test" style="display:none;">{{ article.body }}</textarea>
+				</ol>
+		</div>
 	</div>
-	<a type="button" class="btn btn-primary btn-block" href="{% url 'article:article_titles' %}">返回问题首页</a>
-</div>
-<script type="text/javascript" src='{% static "js/jquery.js" %}'></script>
-<script type="text/javascript" src='{% static "editor/lib/marked.min.js" %}'></script>
-<script type="text/javascript" src='{% static "editor/lib/prettify.min.js" %}'></script>
-<script type="text/javascript" src='{% static "editor/lib/raphael.min.js" %}'></script>
-<script type="text/javascript" src='{% static "editor/lib/underscore.min.js" %}'></script>
-<script type="text/javascript" src='{% static "editor/lib/sequence-diagram.min.js" %}'></script>
-<script type="text/javascript" src='{% static "editor/lib/flowchart.min.js" %}'></script>
-<script type="text/javascript" src='{% static "editor/lib/jquery.flowchart.min.js" %}'></script>
-<script type="text/javascript" src='{% static "editor/editormd.js" %}'></script>
-<script type="text/javascript" src='{% static "js/layer.js" %}'></script>
-<script type="text/javascript">
-	$(function(){
-		editormd.markdownToHTML("editormd-view",{
-			htmlDecode : "style,script,iframe",
-			emoji : true,
-			taskList : true,
-			tex : true,
-			flowChart :true,
-			sequenceDiagram : true,
+	<script type="text/javascript" src='{% static "js/jquery.js" %}'></script>
+	<script type="text/javascript" src='{% static "editor/lib/marked.min.js" %}'></script>
+	<script type="text/javascript" src='{% static "editor/lib/prettify.min.js" %}'></script>
+	<script type="text/javascript" src='{% static "editor/lib/raphael.min.js" %}'></script>
+	<script type="text/javascript" src='{% static "editor/lib/underscore.min.js" %}'></script>
+	<script type="text/javascript" src='{% static "editor/lib/sequence-diagram.min.js" %}'></script>
+	<script type="text/javascript" src='{% static "editor/lib/flowchart.min.js" %}'></script>
+	<script type="text/javascript" src='{% static "editor/lib/jquery.flowchart.min.js" %}'></script>
+	<script type="text/javascript" src='{% static "editor/editormd.js" %}'></script>
+	<script type="text/javascript" src='{% static "js/layer.js" %}'></script>
+	<script type="text/javascript">
+		$(function(){
+			editormd.markdownToHTML("editormd-view",{
+				htmlDecode : "style,script,iframe",
+				emoji : true,
+				taskList : true,
+				tex : true,
+				flowChart :true,
+				sequenceDiagram : true,
+			});
 		});
-	});
-
-	function like_article(id,username,action){
-		$.ajax({
-			url:"{% url 'article:like_article' %}",
-			type:"POST",
-			data:{"id":id, "username":username, "action":action},
-			success: function(e){
-				if(e=="1"){
-					layer.msg("感谢点赞");
-					setTimeout("location.reload();",1000);
-				}else if(e=="3"){
-					layer.msg("你已经点过攒了！");
-				}else if(e=="2"){
-					layer.msg("我会继续努力的^_^");
-					setTimeout("location.reload();",1000);
-				}else{
-					layer.msg("出错啦！");
-					setTimeout("location.reload();",1000);
-				}
-			},
-		});
-	}
-</script>
+		function like_article(id,action){
+			$.ajax({
+				url:"{% url 'article:like_article' %}",
+				type:"POST",
+				data:{"id":id, "action":action},
+				success: function(e){
+					if(e=="1"){
+						layer.msg("感谢点赞");
+						setTimeout("location.reload();",1000);
+					}else{
+						layer.msg("我会继续努力的^_^");
+						setTimeout("location.reload();",1000);
+					}
+				},
+			});
+		}
+	</script>
 {% endwith %}
 {% endblock content %}

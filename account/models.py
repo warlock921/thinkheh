@@ -9,6 +9,8 @@ class UserProfile(models.Model):
 	phone = models.CharField(max_length=11,null=True)
 	sex = models.CharField(max_length=2,choices=SEX_CHOICES,default='男')
 	company_or_person = models.CharField(max_length=2,choices=RE_KIND,default='个人')
+	#用户ip地址
+	user_ip = models.CharField(max_length=18,null=True)
 	# ID_card = models.CharField(max_length=18,null=True)
 	# company_name = models.CharField(max_length=300,null=True,blank=True)
 
@@ -31,6 +33,7 @@ class UserInfo(models.Model):
 	address = models.CharField(max_length=100,blank=True)
 	#自我介绍
 	aboutme = models.TextField(blank=True)
+
 
 	class Meta:
 		verbose_name = "用户信息管理"

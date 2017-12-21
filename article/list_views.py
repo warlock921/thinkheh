@@ -13,8 +13,17 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 
+import redis
+from django.conf import settings
+
 from .models import AriticleColumn,AriticlePost
 
+#redis服务器连接设置，具体参数在settings文件配置
+r = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
+
+#list_views视图开始
+
+#问题标题视图
 def article_titles(request, username=None):
 
 	#判断是否选择了查看某用户的全部问题
@@ -40,13 +49,27 @@ def article_titles(request, username=None):
 		articles = current_page.object_list
 	return render(request, "article/list/article_titles.html", {"articles":articles, "page":current_page})
 
-def article_detail(request,id,slug):
-	article = get_object_or_404(AriticlePost,id=id,slug=slug)
-	return render(request, "article/list/article_detail.html", {"article":article})
-
+#问题显示页面视图,含问题被浏览次数、最热问题排序（使用redis技术）
 @login_required(login_url='/account/login')
-@require_POST       #这里表示只接受POST事件
+def article_detail(request,id,slug):
+	print(request.META['REMOTE_ADDR'])
+	print(type(request.META['REMOTE_ADDR']))
+	article = get_object_or_404(AriticlePost,id=id,slug=slug)
+	total_views = r.incr("article:{}:views".format(article.id)) #redis对于键的命名没有强制的要求，比较好的用法：“对象类型：对象ID：对象属性”
+	user_ip = request.META['REMOTE_ADDR']
+	r.zincrby('article_ranking, article_id', 1)
+
+	#提取最热问题并进行排序
+	article_ranking = r.zrange('article_ranking',0,-1,desc=True)[:10]
+	article_ranking_ids = [int(id) for id in article_ranking]
+	most_viewed = list(AriticlePost.objects.filter(id__in=article_ranking_ids))
+	most_viewed.sort(key=lambda x: article_ranking_ids.index(x.id))
+	return render(request, "article/list/article_detail.html", {"article":article, "total_views":total_views, "most_viewed":most_viewed, "user_ip":user_ip})
+
+#指定问题点赞视图
 @csrf_exempt
+@require_POST       #这里表示只接受POST事件
+@login_required(login_url='/account/login')
 def like_article(request):
 	article_id = request.POST.get("id")
 	# username = request.POST.get("username")

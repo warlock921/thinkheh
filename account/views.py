@@ -43,6 +43,7 @@ def user_login(request):
 		if login_form.is_valid():
 			cd = login_form.cleaned_data
 			user =authenticate(username=cd['username'], password=cd['password'])
+			user_ip = request.META['REMOTE_ADDR']
 			if user:
 				login(request,user)
 				return HttpResponse("验证通过，欢迎登录红企家园！")
