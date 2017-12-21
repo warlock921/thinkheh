@@ -17,6 +17,7 @@ import redis
 from django.conf import settings
 
 from .models import AriticleColumn,AriticlePost
+from account.models import UserProfile
 
 #redis服务器连接设置，具体参数在settings文件配置
 r = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
@@ -52,19 +53,46 @@ def article_titles(request, username=None):
 #问题显示页面视图,含问题被浏览次数、最热问题排序（使用redis技术）
 @login_required(login_url='/account/login')
 def article_detail(request,id,slug):
-	print(request.META['REMOTE_ADDR'])
-	print(type(request.META['REMOTE_ADDR']))
-	article = get_object_or_404(AriticlePost,id=id,slug=slug)
-	total_views = r.incr("article:{}:views".format(article.id)) #redis对于键的命名没有强制的要求，比较好的用法：“对象类型：对象ID：对象属性”
+	userprofile = UserProfile.objects.get(user=request.user)
 	user_ip = request.META['REMOTE_ADDR']
-	r.zincrby('article_ranking, article_id', 1)
+
+	#判断用户登录IP是否为同一地址的标志
+	user_ip_flag = False
+
+	#判断用户登录IP是否为同一地址
+	if user_ip == userprofile.user_ip:
+		user_ip_flag = True
+
+	article = get_object_or_404(AriticlePost,id=id,slug=slug)
+
+	#通过IP标志判断是否自增浏览人数
+	if user_ip_flag:	
+		total_views = r.incr("article:{}:views".format(article.id))
+		total_views = r.decr("article:{}:views".format(article.id))
+	else:
+		total_views = r.incr("article:{}:views".format(article.id)) #redis对于键的命名没有强制的要求，比较好的用法：“对象类型：对象ID：对象属性”
+		userprofile.user_ip = user_ip
+		userprofile.save()
+
+
+
+	
+
+	#重新装配用户IP地址，用*遮掩第三位和第四位
+	list_user_ip = user_ip.split(".")
+	new_user_ip = list_user_ip[0]+' . '+list_user_ip[1]+' . '+' * . *'
+	# print(new_user_ip)
+	if user_ip_flag:
+		r.zincrby('article_ranking', article.id, 0)
+	else:
+		r.zincrby('article_ranking', article.id, 1)
 
 	#提取最热问题并进行排序
 	article_ranking = r.zrange('article_ranking',0,-1,desc=True)[:10]
 	article_ranking_ids = [int(id) for id in article_ranking]
 	most_viewed = list(AriticlePost.objects.filter(id__in=article_ranking_ids))
 	most_viewed.sort(key=lambda x: article_ranking_ids.index(x.id))
-	return render(request, "article/list/article_detail.html", {"article":article, "total_views":total_views, "most_viewed":most_viewed, "user_ip":user_ip})
+	return render(request, "article/list/article_detail.html", {"article":article, "total_views":total_views, "most_viewed":most_viewed, "new_user_ip":new_user_ip})
 
 #指定问题点赞视图
 @csrf_exempt
@@ -72,8 +100,6 @@ def article_detail(request,id,slug):
 @login_required(login_url='/account/login')
 def like_article(request):
 	article_id = request.POST.get("id")
-	# username = request.POST.get("username")
-	# print(username)
 	action = request.POST.get("action")
 	if article_id and action:
 		try:

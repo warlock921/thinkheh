@@ -26,7 +26,8 @@ def register(request):
 				new_user.save()
 
 				new_userprofile = userprofile_form.save(commit=False)
-				new_userprofile.user = new_user 
+				new_userprofile.user = new_user
+				new_userprofile.user_ip = request.META['REMOTE_ADDR']
 				new_userprofile.save()
 				UserInfo.objects.create(user=new_user)
 				return render(request, "registration/login.html", { 'form':user_form })
@@ -37,15 +38,20 @@ def register(request):
 		userprofile_form = UserProfileForm()
 		return render(request,"account/register.html",{"form":user_form,"profile":userprofile_form})
 
+#此方法已经被系统方法替代，不起作用了
 def user_login(request):
+	userprofile = UserProfile.objects.get(user=request.user)
 	if request.method == "POST":
 		login_form = LoginForm(request.POST)
 		if login_form.is_valid():
 			cd = login_form.cleaned_data
 			user =authenticate(username=cd['username'], password=cd['password'])
 			user_ip = request.META['REMOTE_ADDR']
+			print(user_ip)
 			if user:
 				login(request,user)
+				userprofile.user_ip =user_ip
+				userprofile.save()
 				return HttpResponse("验证通过，欢迎登录红企家园！")
 			else:
 				return HttpResponse("对不起，您的用户名或密码不正确！")

@@ -17,20 +17,21 @@
 						<a type="button" class="btn btn-info btn-big"> {{ total_views }} 人浏览</a>
 						<table>
 							<tr>
-								<th>点赞此问题的用户</th>
+								<th>谁点的赞？</th>
 							</tr>
 							<tr>
 								{% for user in article.users_like.all %}
-									<td class="text-left"><span class="label label-default">{{user.username}}</span></td>
+									<td class="text-left" colspan="10px"><span class="label label-default">{{ user.username }}</span></td>
 									{% empty %}
-									<td><span class="label label-default">还没有人对此问题表态</span></td>
+									<td colspan="10px"><span class="label label-default">还没有人对此问题表态</span></td>
 								{% endfor %}
 								
 							</tr>
 						</table>
 					</p>
 					<p>问题所有者：<a type="button" class="btn btn-danger btn-xs" href="{% url 'article:author_articles' article.author.username%}"  data-toggle="tooltip" data-placement="right" title="看此作者的所有问题">{{ article.author.username }}</a></p>
-					问题所属标签：<button type="button" class="btn btn-info btn-xs">{{article.column}}</button>
+					问题所属标签：<a type="button" class="btn btn-info btn-xs">{{ article.column }}</a>
+					你的IP地址：<a type="button" class="btn btn-info btn-xs">{{ new_user_ip }}</a>
 				</header>
 				<link rel="stylesheet" href="{% static 'editor/css/editormd.preview.css' %}"/>
 				<div id="editormd-view">
@@ -40,7 +41,7 @@
 			</div>
 		</div>
 		<div class="col-md-3">
-			<p class="text-center"><h3>最受关注的问题<h3></p>
+			<p class="text-center"><h5>最受关注的问题<h5></p>
 				<ol class="text-left">
 					{% for article_rank in most_viewed %}
 						<li>
