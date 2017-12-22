@@ -46,3 +46,16 @@ class AriticlePost(models.Model):
 	def get_url_path(self):
 		return reverse("article:list_article_detail", args=[self.id,self.slug])
 
+#问题评论发布-数据库模型
+class Comment(models.Model):
+	article = models.ForeignKey(AriticlePost,verbose_name="问题外键", related_name="comments")
+	commentator = models.CharField(max_length=90)
+	body = models.TextField()
+	created = models.DateTimeField(auto_now_add=True)
+
+	class Meta:
+		ordering = ('-created',)
+
+	def __str__(self):
+		return "Comment by {0} on {1}".format(self.commentator.username,self.article)
+	

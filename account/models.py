@@ -11,6 +11,7 @@ class UserProfile(models.Model):
 	company_or_person = models.CharField(max_length=2,choices=RE_KIND,default='个人')
 	#用户ip地址
 	user_ip = models.CharField(max_length=18,null=True)
+	last_article_id = models.IntegerField(null=True)
 	# ID_card = models.CharField(max_length=18,null=True)
 	# company_name = models.CharField(max_length=300,null=True,blank=True)
 

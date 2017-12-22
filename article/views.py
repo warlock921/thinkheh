@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.utils import timezone
 from django.conf import settings
-from slugify import slugify
+#from slugify import slugify
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.core.files.storage import default_storage

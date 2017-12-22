@@ -12,11 +12,11 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
-
 import redis
 from django.conf import settings
 
-from .models import AriticleColumn,AriticlePost
+from .models import AriticleColumn,AriticlePost,Comment
+from .forms import CommentForm
 from account.models import UserProfile
 
 #redis服务器连接设置，具体参数在settings文件配置
@@ -64,24 +64,27 @@ def article_detail(request,id,slug):
 		user_ip_flag = True
 
 	article = get_object_or_404(AriticlePost,id=id,slug=slug)
+	# print("本篇文章的ID：%d"%article.id)
+	# print("用户最后一次阅读文章的ID：%d"%userprofile.last_article_id)
 
 	#通过IP标志判断是否自增浏览人数
-	if user_ip_flag:	
+	if user_ip_flag and (userprofile.last_article_id == article.id):	
 		total_views = r.incr("article:{}:views".format(article.id))
 		total_views = r.decr("article:{}:views".format(article.id))
 	else:
 		total_views = r.incr("article:{}:views".format(article.id)) #redis对于键的命名没有强制的要求，比较好的用法：“对象类型：对象ID：对象属性”
 		userprofile.user_ip = user_ip
+		userprofile.last_article_id = article.id
 		userprofile.save()
 
-
-
-	
+	# print("本篇文章的ID：%d"%article.id)
+	# print("用户最后一次阅读文章的ID：%d"%userprofile.last_article_id)
 
 	#重新装配用户IP地址，用*遮掩第三位和第四位
 	list_user_ip = user_ip.split(".")
 	new_user_ip = list_user_ip[0]+' . '+list_user_ip[1]+' . '+' * . *'
-	# print(new_user_ip)
+
+	#判断是否为同IP，防止刷问题热度
 	if user_ip_flag:
 		r.zincrby('article_ranking', article.id, 0)
 	else:
@@ -92,7 +95,21 @@ def article_detail(request,id,slug):
 	article_ranking_ids = [int(id) for id in article_ranking]
 	most_viewed = list(AriticlePost.objects.filter(id__in=article_ranking_ids))
 	most_viewed.sort(key=lambda x: article_ranking_ids.index(x.id))
-	return render(request, "article/list/article_detail.html", {"article":article, "total_views":total_views, "most_viewed":most_viewed, "new_user_ip":new_user_ip})
+	
+	#问题评论处理视图
+	if request.method == "POST":
+		comment_form = CommentForm(data=request.POST)
+		if comment_form.is_valid():
+			cd = comment_form.cleaned_data
+			new_comment = comment_form.save(commit=False)
+			new_comment.commentator = request.user
+			print(new_comment.commentator)
+			new_comment.article = article
+			new_comment.save()
+	else:
+		comment_form = CommentForm()
+
+	return render(request, "article/list/article_detail.html", {"article":article, "total_views":total_views, "most_viewed":most_viewed, "new_user_ip":new_user_ip, "comment_form":comment_form})
 
 #指定问题点赞视图
 @csrf_exempt
