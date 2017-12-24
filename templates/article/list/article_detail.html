@@ -42,7 +42,7 @@
 			<!-- 评论功能 -->
 			<hr>
 			<div>
-				<h3><span class="glyphicon glyphicon-bullhorn"></span> 本问题有{{ comments.count }}条答案</h3>
+				<h3><span class="glyphicon glyphicon-bullhorn"></span> 本问题有{{ article.comments.count }}条答案</h3>
 				{% for comment in article.comments.all %}
 					<div>
 						<p><strong>{{ comment.commentator }}</strong>说：</p>
