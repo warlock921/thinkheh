@@ -52,6 +52,7 @@ class Comment(models.Model):
 	commentator = models.CharField(max_length=90)
 	body = models.TextField()
 	created = models.DateTimeField(auto_now_add=True)
+	is_best_answer = models.BooleanField(default=False)
 
 	class Meta:
 		ordering = ('-created',)

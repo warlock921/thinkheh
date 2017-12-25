@@ -52,6 +52,7 @@ def article_titles(request, username=None):
 
 #问题显示页面视图,含问题被浏览次数、最热问题排序（使用redis技术）
 @login_required(login_url='/account/login')
+@csrf_exempt
 def article_detail(request,id,slug):
 	userprofile = UserProfile.objects.get(user=request.user)
 	user_ip = request.META['REMOTE_ADDR']

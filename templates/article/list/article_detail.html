@@ -5,6 +5,8 @@
 {% endblock title %}
 {% block content %}
 	{% with total_likes=article.users_like.count users_like=article.users_like.all %}
+	<link rel="stylesheet" type="text/css" href="{% static 'editor/css/style.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'editor/css/editormd.css' %}">
 	<div class="container">
 		<div class="col-md-9">
 			<div>
@@ -48,43 +50,43 @@
 						<p><strong>{{ comment.commentator }}</strong>说：</p>
 						<p style="margin-left: 40px;">{{ comment.body }}</p>
 					</div>
-				{% empty %}
-				<p>暂时还没有人回答此问题</p>
+					{% empty %}
+					<p>暂时还没有人回答此问题</p>
 				{% endfor %}
 				<h3><span class="glyphicon glyphicon-send"></span>回答问题</h3>
-				<form action="." method="POST" class="form-horizontal" role="form">
-					{% csrf_token %}
+				<form action="." method="post" class="form-horizontal">{% csrf_token %}
 					<div class="form-group">
 						<label for="inputEmail3" class="col-sm-2 contorl-label">回答者</label>
 						<div class="col-sm-10">
-						{{ user.username }}
+							{{ user.username }}
 						</div>
 					</div>
 					<div class="form-group">
 						<label for="inputEmail3" class="col-sm-2 contorl-label">问题答案</label>
 						<div class="col-sm-10">
-						{{ comment_form.body }}
+							<!-- {{ comment_form.body }} -->
+							<div id="answer_editormd" class="col-md-10 text-left">
+								<textarea style="display: none;" id="id_answer_body"></textarea>
+							</div>
 						</div>
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-2 col-sm-10">
-							<p><input type="submit" name="" value="发表问题答案" class="btn btn-primary"></p>
+							<p><input type="button" name="" value="发表问题答案" class="btn btn-primary" onclick="publish_answer()"></p>
 						</div>
 					</div>
-
 				</form>
 			</div>
-
 		</div>
 		<div class="col-md-3">
 			<p class="text-center"><h5>最受关注的问题<h5></p>
-				<ol class="text-left">
-					{% for article_rank in most_viewed %}
-						<li>
-							<a href="{{ article_rank.get_url_path }}">{{ article_rank.title }}</a>
-						</li>
-					{% endfor %}
-				</ol>
+			<ol class="text-left">
+				{% for article_rank in most_viewed %}
+					<li>
+						<a href="{{ article_rank.get_url_path }}">{{ article_rank.title }}</a>
+					</li>
+				{% endfor %}
+			</ol>
 		</div>
 	</div>
 	<script type="text/javascript" src='{% static "js/jquery.js" %}'></script>
@@ -108,6 +110,7 @@
 				sequenceDiagram : true,
 			});
 		});
+
 		function like_article(id,action){
 			$.ajax({
 				url:"{% url 'article:like_article' %}",
@@ -124,6 +127,75 @@
 				},
 			});
 		}
+
+		function publish_answer(){
+			//var title = $("#id_title").val();
+			//var column_id = $("#which_column").val();
+			var body = $("#id_answer_body").val();
+			$.ajax({
+				url:"{% url 'article:article_detail' article.id article.slug %}",
+				type:"POST",
+				data:{"body":body},
+				success:function(e){
+					if(e=="1"){
+						layer.msg("成功发布话题");
+						location.href = "{% url 'article:article_list' %}";
+					}else if(e=="2"){
+						layer.msg("对不起，话题发布失败！");
+					}else{
+						layer.msg("话题名称必须写,不能空！")
+					}
+				}
+			});
+		}
+
+		//简单的 Markdown 编辑器
+		$(function(){
+			var editor = editormd("answer_editormd", {
+				// width  : "100%",
+				// height : 640,
+				// emoji:true,
+				// imageUpload : true,
+				// imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+				// imageUploadURL : "{% static 'editor_up_load/images' %}",
+				// syncScrolling:"single",
+				// path :"{% static 'editor/lib/' %}"
+				width   : "100%",
+				height  : 320,
+				//syncScrolling : "single",
+				path    : "{% static 'editor/lib/' %}",
+				saveHTMLToTextarea : true,
+				emoji: true,//emoji表情，默认关闭
+				taskList: true,
+				tocm: true, // Using [TOCM]
+				tex: true,// 开启科学公式TeX语言支持，默认关闭
+				flowChart: true,//开启流程图支持，默认关闭
+				sequenceDiagram: true,//开启时序/序列图支持，默认关闭,
+				dialogLockScreen : false,//设置弹出层对话框不锁屏，全局通用，默认为true
+				dialogShowMask : false,//设置弹出层对话框显示透明遮罩层，全局通用，默认为true
+				dialogDraggable : false,//设置弹出层对话框不可拖动，全局通用，默认为true
+				dialogMaskOpacity : 0.4, //设置透明遮罩层的透明度，全局通用，默认值为0.1
+				dialogMaskBgColor : "#000",//设置透明遮罩层的背景颜色，全局通用，默认为#fff
+				codeFold: true,
+				imageUpload : true,
+				imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+				imageUploadURL : "{% url 'article:editor_image_upload' %}",
+				/*上传图片成功后可以做一些自己的处理*/
+				// onload: function () {
+				//     //console.log('onload', this);
+				//     //this.fullscreen();
+				//     //this.unwatch();
+				//     //this.watch().fullscreen();
+				//     //this.width("100%");
+				//     //this.height(480);
+				//     //this.resize("100%", 640);
+				// },
+				/**设置主题颜色*/
+				editorTheme: "pastel-on-dark",
+				theme: "-midnight",
+				previewTheme: "midnight"
+			});
+		});
 	</script>
 {% endwith %}
 {% endblock content %}
