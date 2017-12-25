@@ -13,7 +13,7 @@
 				<header>
 					<h1>{{ article.title }}</h1>
 					<p>
-						<a type="button" class="btn btn-success btn-big" onclick="like_article({{article.id}},'like')" href="#" data-toggle="tooltip" data-placement="up" title="喜欢这个问题就点个赞">点赞</a>
+						<a id="focus_id" type="button" class="btn btn-success btn-big" onclick="like_article({{article.id}},'like')" href="#" data-toggle="tooltip" data-placement="up" title="喜欢这个问题就点个赞">点赞</a>
 						<a type="button" class="btn btn-warning btn-big" onclick="like_article({{article.id}},'unlike')" href="#" data-toggle="tooltip" data-placement="up" title="不喜欢这个问题就点我">我不喜欢</a>
 						<a type="button" class="btn btn-info btn-big"> {{ total_likes }} 人点赞</a>
 						<a type="button" class="btn btn-info btn-big"> {{ total_views }} 人浏览</a>
@@ -46,11 +46,16 @@
 			<div>
 				<h3><span class="glyphicon glyphicon-bullhorn"></span> 本问题有{{ article.comments.count }}条答案</h3>
 				{% for comment in article.comments.all %}
-					<div>
-						<p><strong>{{ comment.commentator }}</strong>说：</p>
-						<p style="margin-left: 40px;">{{ comment.body }}</p>
-					</div>
-					{% empty %}
+						<hr>
+						<div>
+							<p><strong>{{ comment.commentator }}</strong>说：</p>
+							<!-- <p style="margin-left: 40px;">{{ comment.body }}</p> -->
+							<link rel="stylesheet" href="{% static 'editor/css/editormd.preview.css' %}"/>
+							<div id="editormd-view{{forloop.counter}}">
+								<textarea id="append-test" style="display:none;">{{ comment.body }}</textarea>
+							</div>
+						</div>
+				{% empty %}
 					<p>暂时还没有人回答此问题</p>
 				{% endfor %}
 				<h3><span class="glyphicon glyphicon-send"></span>回答问题</h3>
@@ -100,6 +105,8 @@
 	<script type="text/javascript" src='{% static "editor/editormd.js" %}'></script>
 	<script type="text/javascript" src='{% static "js/layer.js" %}'></script>
 	<script type="text/javascript">
+		
+		//显示问题主要内容
 		$(function(){
 			editormd.markdownToHTML("editormd-view",{
 				htmlDecode : "style,script,iframe",
@@ -111,6 +118,26 @@
 			});
 		});
 
+		//显示答案动作函数
+		$(function(){
+			var num = {{ comment_num_list }};
+			for (var i=1;i<=num.length;i++)
+			{
+				var editor_name = "editormd-view"+i;
+				// alert(editor_name)
+				editormd.markdownToHTML(editor_name,{
+					htmlDecode : "style,script,iframe",
+					emoji : true,
+					taskList : true,
+					tex : true,
+					flowChart :true,
+					sequenceDiagram : true,
+					onfocus : false,
+				});
+			}
+		});
+
+		//点赞动作函数
 		function like_article(id,action){
 			$.ajax({
 				url:"{% url 'article:like_article' %}",
@@ -128,18 +155,19 @@
 			});
 		}
 
+		//发布问题答案的动作函数
 		function publish_answer(){
 			//var title = $("#id_title").val();
 			//var column_id = $("#which_column").val();
 			var body = $("#id_answer_body").val();
 			$.ajax({
-				url:"{% url 'article:article_detail' article.id article.slug %}",
+				url:"{% url 'article:list_article_detail' article.id article.slug %}",
 				type:"POST",
 				data:{"body":body},
 				success:function(e){
 					if(e=="1"){
 						layer.msg("成功发布话题");
-						location.href = "{% url 'article:article_list' %}";
+						location.href = "{% url 'article:list_article_detail' article.id article.slug %}";
 					}else if(e=="2"){
 						layer.msg("对不起，话题发布失败！");
 					}else{
@@ -164,6 +192,7 @@
 				height  : 320,
 				//syncScrolling : "single",
 				path    : "{% static 'editor/lib/' %}",
+				markdown : "#### 请在这里输入答案",
 				saveHTMLToTextarea : true,
 				emoji: true,//emoji表情，默认关闭
 				taskList: true,
@@ -181,15 +210,15 @@
 				imageFormats : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
 				imageUploadURL : "{% url 'article:editor_image_upload' %}",
 				/*上传图片成功后可以做一些自己的处理*/
-				// onload: function () {
-				//     //console.log('onload', this);
+				onload: function () {
+					console.log('onload', this);
 				//     //this.fullscreen();
 				//     //this.unwatch();
 				//     //this.watch().fullscreen();
 				//     //this.width("100%");
 				//     //this.height(480);
 				//     //this.resize("100%", 640);
-				// },
+				},
 				/**设置主题颜色*/
 				editorTheme: "pastel-on-dark",
 				theme: "-midnight",

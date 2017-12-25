@@ -56,6 +56,7 @@ def article_titles(request, username=None):
 def article_detail(request,id,slug):
 	userprofile = UserProfile.objects.get(user=request.user)
 	user_ip = request.META['REMOTE_ADDR']
+	comment_set = Comment.objects.filter(article_id=id)
 
 	#判断用户登录IP是否为同一地址的标志
 	user_ip_flag = False
@@ -96,21 +97,37 @@ def article_detail(request,id,slug):
 	article_ranking_ids = [int(id) for id in article_ranking]
 	most_viewed = list(AriticlePost.objects.filter(id__in=article_ranking_ids))
 	most_viewed.sort(key=lambda x: article_ranking_ids.index(x.id))
+
+	#取得当前问题答案comment的数量
+	comment_count = comment_set.count()
+	comment_num_list = []
+	while comment_count >= 1:
+		comment_count -= 1
+		comment_num_list.append(comment_count)
 	
 	#问题评论处理视图
 	if request.method == "POST":
 		comment_form = CommentForm(data=request.POST)
+
+		
+
 		if comment_form.is_valid():
 			cd = comment_form.cleaned_data
-			new_comment = comment_form.save(commit=False)
-			new_comment.commentator = request.user
-			print(new_comment.commentator)
-			new_comment.article = article
-			new_comment.save()
+			try:
+				new_comment = comment_form.save(commit=False)
+				new_comment.commentator = request.user
+				# print(new_comment.commentator)
+				new_comment.article = article
+				new_comment.save()
+				return HttpResponse("1")
+			except Exception as e:
+				return HttpResponse("2")
+		else:
+			return HttpResponse("3")
 	else:
 		comment_form = CommentForm()
 
-	return render(request, "article/list/article_detail.html", {"article":article, "total_views":total_views, "most_viewed":most_viewed, "new_user_ip":new_user_ip, "comment_form":comment_form})
+	return render(request, "article/list/article_detail.html", {"article":article, "total_views":total_views, "most_viewed":most_viewed, "new_user_ip":new_user_ip, "comment_num_list":comment_num_list, "comment_form":comment_form})
 
 #指定问题点赞视图
 @csrf_exempt

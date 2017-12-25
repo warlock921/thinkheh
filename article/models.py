@@ -58,5 +58,5 @@ class Comment(models.Model):
 		ordering = ('-created',)
 
 	def __str__(self):
-		return "Comment by {0} on {1}".format(self.commentator.username,self.article)
+		return "Comment by {0} on {1}".format(self.commentator,self.article)
 	
