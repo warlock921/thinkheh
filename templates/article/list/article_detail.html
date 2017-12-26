@@ -1,8 +1,13 @@
 {% extends "base.html" %}
+
+{% load article_tags %}
+
 {% load staticfiles %}
+
 {% block title %}
 	{{article.title}}
 {% endblock title %}
+
 {% block content %}
 	{% with total_likes=article.users_like.count users_like=article.users_like.all %}
 	<link rel="stylesheet" type="text/css" href="{% static 'editor/css/style.css' %}">
@@ -37,7 +42,7 @@
 				</header>
 				<link rel="stylesheet" href="{% static 'editor/css/editormd.preview.css' %}"/>
 				<div id="editormd-view">
-					<textarea id="append-test" style="display:none;">{{ article.body }}</textarea>
+					<textarea id="append-test" style="display:none;">{{ article.body | markdown }}</textarea>
 				</div>
 				<a type="button" class="btn btn-primary btn-block" href="{% url 'article:article_titles' %}">返回问题首页</a>
 			</div>
@@ -45,19 +50,21 @@
 			<hr>
 			<div>
 				<h3><span class="glyphicon glyphicon-bullhorn"></span> 本问题有{{ article.comments.count }}条答案</h3>
-				{% for comment in article.comments.all %}
+				{% for answer in answers.all %}
 						<hr>
 						<div>
-							<p><strong>{{ comment.commentator }}</strong>说：</p>
+							<p><strong>{{ answer.commentator }}</strong>说：</p>
 							<!-- <p style="margin-left: 40px;">{{ comment.body }}</p> -->
 							<link rel="stylesheet" href="{% static 'editor/css/editormd.preview.css' %}"/>
 							<div id="editormd-view{{forloop.counter}}">
-								<textarea id="append-test" style="display:none;">{{ comment.body }}</textarea>
+								<textarea id="append-test" style="display:none;">{{ answer.body | markdown }}</textarea>
 							</div>
+
 						</div>
 				{% empty %}
 					<p>暂时还没有人回答此问题</p>
 				{% endfor %}
+				{% include 'paginator.html' %}
 				<h3><span class="glyphicon glyphicon-send"></span>回答问题</h3>
 				<form action="." method="post" class="form-horizontal">{% csrf_token %}
 					<div class="form-group">
@@ -70,7 +77,7 @@
 						<label for="inputEmail3" class="col-sm-2 contorl-label">问题答案</label>
 						<div class="col-sm-10">
 							<!-- {{ comment_form.body }} -->
-							<div id="answer_editormd" class="col-md-10 text-left">
+							<div id="answer_editormd" class="col-xs-md-10 text-left">
 								<textarea style="display: none;" id="id_answer_body"></textarea>
 							</div>
 						</div>
@@ -84,12 +91,27 @@
 			</div>
 		</div>
 		<div class="col-md-3">
-			<p class="text-center"><h5>最受关注的问题<h5></p>
+			<p class="text-center"><h3>最受关注的问题</h3></p>
 			<ol class="text-left">
 				{% for article_rank in most_viewed %}
 					<li>
 						<a href="{{ article_rank.get_url_path }}">{{ article_rank.title }}</a>
 					</li>
+				{% endfor %}
+			</ol>
+			<hr>
+			<p class="text-center"><h3>最新的问题</h3></p>
+				{% latest_articles %}
+			<hr>
+			<p class="text-center"><h3>最多评论的问题</h3></p>
+			{% most_commented_articles as most_comments %}
+			<ol>
+				{% for comment_article in most_comments %}
+
+					<li>
+						<a href="{{comment_article.get_url_path}}">{{comment_article.title}}</a>
+					</li>
+					
 				{% endfor %}
 			</ol>
 		</div>
@@ -189,10 +211,9 @@
 				// syncScrolling:"single",
 				// path :"{% static 'editor/lib/' %}"
 				width   : "100%",
-				height  : 320,
+				height  : 400,
 				//syncScrolling : "single",
 				path    : "{% static 'editor/lib/' %}",
-				markdown : "#### 请在这里输入答案",
 				saveHTMLToTextarea : true,
 				emoji: true,//emoji表情，默认关闭
 				taskList: true,

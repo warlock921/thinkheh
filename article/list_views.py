@@ -84,16 +84,20 @@ def article_detail(request,id,slug):
 
 	#重新装配用户IP地址，用*遮掩第三位和第四位
 	list_user_ip = user_ip.split(".")
-	new_user_ip = list_user_ip[0]+' . '+list_user_ip[1]+' . '+' * . *'
+	new_user_ip = list_user_ip[0]+' . '+list_user_ip[1]+' . '+list_user_ip[2]+' . '+' * '
 
-	#判断是否为同IP，防止刷问题热度
-	if user_ip_flag:
-		r.zincrby('article_ranking', article.id, 0)
-	else:
-		r.zincrby('article_ranking', article.id, 1)
-
+	# #判断是否为同IP，防止刷问题热度
+	# if user_ip_flag and (userprofile.last_article_id == article.id):
+	# 	r.zincrby('article_ranking', article.id, 0)
+	# 	#提取最热问题并进行排序
+	# 	article_ranking = r.zrange('article_ranking',0,-1,desc=True)[:10]
+	# 	article_ranking_ids = [int(id) for id in article_ranking]
+	# 	most_viewed = list(AriticlePost.objects.filter(id__in=article_ranking_ids))
+	# 	most_viewed.sort(key=lambda x: article_ranking_ids.index(x.id))
+	# else:
+	r.zincrby('article_ranking', article.id, 1)
 	#提取最热问题并进行排序
-	article_ranking = r.zrange('article_ranking',0,-1,desc=True)[:10]
+	article_ranking = r.zrange('article_ranking',0,-1,desc=True)[:5]
 	article_ranking_ids = [int(id) for id in article_ranking]
 	most_viewed = list(AriticlePost.objects.filter(id__in=article_ranking_ids))
 	most_viewed.sort(key=lambda x: article_ranking_ids.index(x.id))
@@ -108,8 +112,6 @@ def article_detail(request,id,slug):
 	#问题评论处理视图
 	if request.method == "POST":
 		comment_form = CommentForm(data=request.POST)
-
-		
 
 		if comment_form.is_valid():
 			cd = comment_form.cleaned_data
@@ -127,7 +129,21 @@ def article_detail(request,id,slug):
 	else:
 		comment_form = CommentForm()
 
-	return render(request, "article/list/article_detail.html", {"article":article, "total_views":total_views, "most_viewed":most_viewed, "new_user_ip":new_user_ip, "comment_num_list":comment_num_list, "comment_form":comment_form})
+	#答案分页视图语法
+	paginator = Paginator(comment_set,5)
+	page = request.GET.get('page')
+	try:
+		current_page = paginator.page(page)
+		answers = current_page.object_list
+	except PageNotAnInteger:
+		current_page = paginator.page(1)
+		answers = current_page.object_list
+	except EmptyPage:
+		current_page = paginator.page(paginator.num_pages)
+		answers = current_page.object_list
+	#return render(request, "article/list/article_titles.html", {"answers":answers, "page":current_page})
+
+	return render(request, "article/list/article_detail.html", {"article":article, "total_views":total_views, "most_viewed":most_viewed, "new_user_ip":new_user_ip, "comment_num_list":comment_num_list, "comment_form":comment_form, "answers":answers, "page":current_page})
 
 #指定问题点赞视图
 @csrf_exempt

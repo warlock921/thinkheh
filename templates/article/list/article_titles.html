@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load article_tags %}
+
 {% block title %}
     话题列表
 {% endblock title %}
@@ -7,6 +9,7 @@
 {% block content %}
     <div class="row text-center vertical-middle-sm">
     	<h1>你有问题，我有答案，我们携手前行  <a type="button" class="btn btn-success btn-lg" href="{% url 'article:article_titles' %}">查看全部问题</a></h1>
+        <p>这里有{% total_articles %}个问题供你参考</p>
     </div>
     <div class="container">
     	{% for article in articles %}

@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.core.urlresolvers import reverse
 from slugify import slugify
 
-#栏目设置数据库模型
+#标签设置数据库模型
 class AriticleColumn(models.Model):
 	user = models.ForeignKey(User,verbose_name='创建者', related_name = 'article_column')
 	column = models.CharField(verbose_name='话题标签名称',max_length=200)
@@ -17,7 +17,7 @@ class AriticleColumn(models.Model):
 		verbose_name = "话题标签管理"
 		verbose_name_plural = "话题标签管理"
 
-#栏目文章发布-数据库模型
+#问答主题发布-数据库模型
 class AriticlePost(models.Model):
 	author = models.ForeignKey(User,verbose_name="作者",related_name="article")
 	title = models.CharField(verbose_name="话题名称", max_length=200)
@@ -46,13 +46,13 @@ class AriticlePost(models.Model):
 	def get_url_path(self):
 		return reverse("article:list_article_detail", args=[self.id,self.slug])
 
-#问题评论发布-数据库模型
+#问题评论或答案发布-数据库模型
 class Comment(models.Model):
 	article = models.ForeignKey(AriticlePost,verbose_name="问题外键", related_name="comments")
 	commentator = models.CharField(max_length=90)
 	body = models.TextField()
 	created = models.DateTimeField(auto_now_add=True)
-	is_best_answer = models.BooleanField(default=False)
+	#is_best_answer = models.BooleanField(default=False)
 
 	class Meta:
 		ordering = ('-created',)
