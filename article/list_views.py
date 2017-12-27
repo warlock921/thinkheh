@@ -55,8 +55,14 @@ def article_titles(request, username=None):
 @csrf_exempt
 def article_detail(request,id,slug):
 	userprofile = UserProfile.objects.get(user=request.user)
+	user = User.objects.all()
 	user_ip = request.META['REMOTE_ADDR']
 	comment_set = Comment.objects.filter(article_id=id)
+	
+	#创建用户列表
+	user_list = []
+	for user_name in user:
+		user_list.append(user_name.username)
 
 	#判断用户登录IP是否为同一地址的标志
 	user_ip_flag = False
@@ -143,7 +149,7 @@ def article_detail(request,id,slug):
 		answers = current_page.object_list
 	#return render(request, "article/list/article_titles.html", {"answers":answers, "page":current_page})
 
-	return render(request, "article/list/article_detail.html", {"article":article, "total_views":total_views, "most_viewed":most_viewed, "new_user_ip":new_user_ip, "comment_num_list":comment_num_list, "comment_form":comment_form, "answers":answers, "page":current_page})
+	return render(request, "article/list/article_detail.html", {"article":article, "total_views":total_views, "most_viewed":most_viewed, "new_user_ip":new_user_ip, "comment_num_list":comment_num_list, "comment_form":comment_form, "user_list":user_list, "answers":answers, "page":current_page})
 
 #指定问题点赞视图
 @csrf_exempt

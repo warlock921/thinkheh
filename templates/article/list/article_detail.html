@@ -42,7 +42,7 @@
 				</header>
 				<link rel="stylesheet" href="{% static 'editor/css/editormd.preview.css' %}"/>
 				<div id="editormd-view">
-					<textarea id="append-test" style="display:none;">{{ article.body | markdown }}</textarea>
+					<textarea id="append-test" style="display:none;">{{ article.body }}</textarea>
 				</div>
 				<a type="button" class="btn btn-primary btn-block" href="{% url 'article:article_titles' %}">返回问题首页</a>
 			</div>
@@ -57,7 +57,7 @@
 							<!-- <p style="margin-left: 40px;">{{ comment.body }}</p> -->
 							<link rel="stylesheet" href="{% static 'editor/css/editormd.preview.css' %}"/>
 							<div id="editormd-view{{forloop.counter}}">
-								<textarea id="append-test" style="display:none;">{{ answer.body | markdown }}</textarea>
+								<textarea id="append-test" style="display:none;">{{ answer.body }}</textarea>
 							</div>
 
 						</div>
@@ -127,7 +127,6 @@
 	<script type="text/javascript" src='{% static "editor/editormd.js" %}'></script>
 	<script type="text/javascript" src='{% static "js/layer.js" %}'></script>
 	<script type="text/javascript">
-		
 		//显示问题主要内容
 		$(function(){
 			editormd.markdownToHTML("editormd-view",{
@@ -243,7 +242,8 @@
 				/**设置主题颜色*/
 				editorTheme: "pastel-on-dark",
 				theme: "-midnight",
-				previewTheme: "midnight"
+				previewTheme: "midnight",
+				atLink: false
 			});
 		});
 	</script>

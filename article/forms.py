@@ -6,7 +6,7 @@
 # @Version : $Id$
 
 from django import forms 
-from .models import AriticleColumn,AriticlePost,Comment
+from .models import AriticleColumn,AriticlePost,Comment,ArticleTag
 
 #问题标签表单
 class AriticleColumnForm(forms.ModelForm):
@@ -25,6 +25,14 @@ class CommentForm(forms.ModelForm):
 	class Meta:
 		model = Comment 
 		fields = ("body",)
+
+#问题标签表单
+class ArticleTagForm(forms.ModelForm):
+	class Meta:
+		model = ArticleTag 
+		fields = ('tag',)
+	
+
 
 		
 		

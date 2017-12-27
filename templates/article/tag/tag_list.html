@@ -1,0 +1,100 @@
+{% extends "article/base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}
+    话题标签管理
+{% endblock title %}
+
+{% block content %}
+    <div>
+    	<p>添加话题标签</p>
+    	<form class="form-horizontal" action="." method="post">{% csrf_token %}
+    		<div class="row" style="margin-top: 10px;">
+    			<div class="col-md-2 text-right"><span>话题标签</span></div>
+    			<div class="col-md-10 text-left">{{ article_tag_form.tag }}</div>
+    		</div>
+    		<div class="row" style="margin-top: 10px;">
+    			<div class="col-md-2 text-right">
+				<input type="button" class="btn btn-primary btn-lg" style="margin-top: 10px;" value="添加" onclick="add_tag()">
+    			</div>
+    			
+    		</div>
+    	</form>
+    </div>
+    <hr>
+    <div>
+    	<p style="margin-top: 10px;">已有标签列表</p>
+    	<table class="table tabel-hover">
+    		<tr>
+    			<td>序号</td>
+    			<td>话题标签</td>
+    			<td>操作</td>
+    		</tr>
+    		{% for article_tag in article_tags %}
+    		<tr id={{ forloop.counter }}>
+    			<td >{{ forloop.counter }}</td>
+    			<td>{{ article_tag.tag }}</td>
+    			<td>
+				<a name="delete" href="javascript:" onclick="del_tag(this,{{ article_tag.id }})"><span class="glyphicon glyphicon-trash"></span></a>
+    			</td>
+
+    		</tr>
+    		{% empty %}
+    		<tr>
+    			<td colspan="3">你还没有建立任何话题标签，赶快添加一个吧！</td>
+    		</tr>
+    		{% endfor %}
+    	</table>
+    </div>
+    <script type="text/javascript" src='{% static "js/jquery.js" %}'></script>
+    <script type="text/javascript" src='{% static "js/layer.js" %}'></script>
+    <script type="text/javascript">
+    	//添加话题标签函数
+    	function add_tag(){
+    		tag = $("#id_tag").val();
+    		$.ajax({
+    			url:'{% url "article:article_tag" %}',
+    			type:"POST",
+    			data:{"tag":tag},
+    			success:function(e){
+    				if(e=="1"){
+    					layer.msg("你添加了一个新标签！");
+    					window.location.reload();
+    				} else {
+    					layer.msg(e);
+    				}
+    			}
+    		});
+    	}
+
+    	//删除话题标签函数
+    	function del_tag(the,tag_id){
+    		var article_tag = $(the).parents("tr").children("td").eq(1).text();
+    		layer.open({
+    			type:1,
+    			skin:"layui-layer-git",
+    			area:["400px","200px"],
+    			title:"删除话题标签",
+    			content:'<div class="text-center" style="margin-top:20px"><p>是否确定删除问题标签《'+article_tag+'》</p></div>',
+    			btn:['确定','取消'],
+    			yes:function(){
+    				$.ajax({
+    					url:'{% url "article:del_article_tag" %}',
+    					type:"POST",
+    					data:{"tag_id":tag_id},
+    					success:function(e){
+    						if(e==1){
+    							parent.location.reload();
+    							layer.msg("话题标签已经删除！");
+    						}else{
+    							layer.msg("删除失败");
+    						}
+    					},
+    				})
+    			},
+    		});
+    	}
+    </script>
+{% endblock content %}
+

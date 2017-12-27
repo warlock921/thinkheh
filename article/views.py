@@ -13,8 +13,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
-from .forms import AriticleColumnForm,AriticlePostForm
-from .models import AriticleColumn,AriticlePost
+from .forms import AriticleColumnForm,AriticlePostForm,ArticleTagForm
+from .models import AriticleColumn,AriticlePost,ArticleTag
 
 #话题标签视图
 @login_required(login_url='/account/login')
@@ -185,3 +185,41 @@ def editor_image_upload(request):
 				response_data['success'] = 0
 				response_data['message'] = u'图片大小超过 5 Mb'
 				return HttpResponse(json.dumps(response_data),content_type="application/json")
+
+#问题标签视图函数
+@login_required(login_url='/account/login')
+@csrf_exempt
+def article_tag(request):
+	if request.method == "GET":
+		article_tags = ArticleTag.objects.filter(author=request.user)
+		article_tag_form = ArticleTagForm()
+		return render(request, "article/tag/tag_list.html", {"article_tags":article_tags, "article_tag_form":article_tag_form})
+
+	if request.method == "POST":
+		tag_post_form = ArticleTagForm(data=request.POST)
+		if tag_post_form.is_valid():
+			print("表单验证通过！")
+			try:
+				new_tag = tag_post_form.save(commit=False)
+				new_tag.author = request.user
+				new_tag.save()
+				return HttpResponse("1")
+			except Exception as e:
+				print(e)
+				return HttpResponse("数据保存失败")
+			else:
+				return HttpResponse("对不起，表单验证失败！")
+
+#删除话题标签视图
+@login_required(login_url='/account/login')
+@require_POST   #这里表示只接受POST事件
+@csrf_exempt
+def del_article_tag(request):
+	tag_id = request.POST['tag_id']
+	try:
+		tag = ArticleTag.objects.get(id=tag_id)
+		tag.delete()
+		return HttpResponse("1")
+	except Exception as e:
+		print(e)
+		return HttpResponse("2")
