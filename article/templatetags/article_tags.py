@@ -12,6 +12,8 @@ register = template.Library()
 from article.models import AriticlePost
 from django.db.models import Count
 from django.utils.safestring import mark_safe
+from django.contrib.auth.models import User
+from django.http import HttpResponse
 import markdown
 
 @register.simple_tag
@@ -30,7 +32,6 @@ def latest_articles(n=5):
 @register.assignment_tag
 def most_commented_articles(n=5):
 	return AriticlePost.objects.annotate(total_comments=Count('comments')).order_by("-total_comments")[:n]
-
 
 @register.filter(name='markdown')
 def markdown_filter(text):
