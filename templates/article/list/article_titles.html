@@ -16,7 +16,7 @@
     		<div class="list-group">
     			<h4 class="list-group-item-heading"><a href="{{article.get_url_path}}" class="list-group-item active">{{article.title}}</a></h4>
     				<p class="list-group-item-text">问题所有者：<a type="button" class="btn btn-danger btn-xs" href="{% url 'article:author_articles' article.author.username%}"  data-toggle="tooltip" data-placement="right" title="只看此作者的问题">{{article.author.username}}</a></p>
-    				<p class="list-group-item-text">问题所属标签：</p><button type="button" class="btn btn-info btn-xs">{{article.column}}</button>
+    				<p class="list-group-item-text">问题所属栏目：</p><button type="button" class="btn btn-info btn-xs">{{article.column}}</button>
     				<!-- <p class="list-group-item-text">问题概要：{{article.body|truncatechars:100|linebreaks}}</p> -->
     		</div>
     	{% endfor %}

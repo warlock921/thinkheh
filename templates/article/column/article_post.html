@@ -22,6 +22,18 @@
     				</select>
     			</div>
     		</div>
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-md-2 text-right"><span>问题标签：</span></div>
+                <div class="col-md-10 text-left">
+                    {% for tag in tag_list %}
+                        <label class="checkbox-inline">
+                            <input class="tagcheckbox" id="{{ tag.id }}" name="article_tag" type="checkbox" value="{{ tag.tag }}" />{{ tag.tag }}
+                        </label>
+                    {% empty %}
+                    <p>你还没有任何标签,请 <a href="{% url 'article:article_tag' %}">添加标签</a></p>
+                    {% endfor %}
+                </div>
+            </div>
     		<div class="row" style="margin-top: 10px">
     			<div class="col-md-2 text-right"><span>内容：</span></div>
     			<div id="editormd" class="col-md-10 text-left">
@@ -41,10 +53,12 @@
 		var title = $("#id_title").val();
 		var column_id = $("#which_column").val();
 		var body = $("#id_body").val();
+        var article_tags = [];
+        $.each($("input[name='article_tag']:checked"), function(){article_tags.push($(this).val());});
 		$.ajax({
 			url:"{% url 'article:article_post' %}",
 			type:"POST",
-			data:{"title":title, "body":body, "column_id":column_id},
+			data:{"title":title, "body":body, "column_id":column_id, "tags":JSON.stringify(article_tags)},
 			success:function(e){
 				if(e=="1"){
 					layer.msg("成功发布话题");

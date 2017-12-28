@@ -60,7 +60,7 @@
     			success:function(e){
     				if(e=="1"){
     					layer.msg("你添加了一个新标签！");
-    					window.location.reload();
+    					setTimeout("location.reload();",1000);
     				} else {
     					layer.msg(e);
     				}

@@ -12,6 +12,7 @@
 	<header>
 		<h1>{{ article.title }}</h1>
 		<p>{{ user.username }}</p>
+		<p>文章标签：{{ article.article_tag.all | join:", " }}</p>
 	</header>
 	<link rel="stylesheet" href="{% static 'editor/css/editormd.preview.css' %}"/>
 	<div id="editormd-view">
