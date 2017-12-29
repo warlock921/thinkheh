@@ -15,7 +15,7 @@ from django.http import HttpResponse
 import redis
 from django.conf import settings
 
-from .models import AriticleColumn,AriticlePost,Comment
+from .models import AriticleColumn,AriticlePost,Comment,FollowUser
 from .forms import CommentForm
 from account.models import UserProfile
 
@@ -29,12 +29,16 @@ def article_titles(request, username=None):
 
 	#判断是否选择了查看某用户的全部问题
 	if username:
-		user = User.objects.get(username=username)
-		articles_title = AriticlePost.objects.filter(author=user)
+		user_name_article = User.objects.get(username=username)
+		articles_title = AriticlePost.objects.filter(author=user_name_article)
+		try:
+			userinfo = user_name_article.userinfo
+		except Exception as e:
+			print(e)
+			userinfo = None
 	else:
 		articles_title = AriticlePost.objects.all() #默认选择全部用户的问题
 
-	# articles_title = AriticlePost.objects.all()
 
 	#分页视图语法
 	paginator = Paginator(articles_title,5)
@@ -48,6 +52,9 @@ def article_titles(request, username=None):
 	except EmptyPage:
 		current_page = paginator.page(paginator.num_pages)
 		articles = current_page.object_list
+
+	if username:
+		return render(request, "article/list/author_articles.html", {"articles":articles, "page":current_page, "userinfo":userinfo, "user_name_article":user_name_article})
 	return render(request, "article/list/article_titles.html", {"articles":articles, "page":current_page})
 
 #问题显示页面视图,含问题被浏览次数、最热问题排序（使用redis技术）
@@ -169,3 +176,29 @@ def like_article(request):
 				return HttpResponse("2")
 		except Exception as e:
 			return HttpResponse("no")
+
+#关注视图
+@csrf_exempt
+@require_POST       #这里表示只接受POST事件
+@login_required(login_url='/account/login')
+def follow_user(request):
+	follow_user_id = request.POST.get("user_id")
+	action = request.POST.get("action")
+	
+	# if request.method == "GET":
+	# 	follow_set = FollowUser.objects.all()
+	# 	return render(request,)
+	
+	if follow_user_id and action:
+		follow_set = FollowUser.objects.filter(id=user_id)
+		print(follow_set)
+		# try:
+			
+		# 	if action == "follow":
+		# 		follow_set.
+		# 		return HttpResponse("1")
+		# 	else:
+		# 		follow_set.follow_user.remove(request.user)
+		# except Exception as e:
+		# 	print(e)
+		# 	return HttpResponse("Failed")

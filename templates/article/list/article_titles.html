@@ -24,7 +24,8 @@
                                 </tr>
                             </table>
                             </p>
-    				<p class="list-group-item-text">问题所有者：<a type="button" class="btn btn-danger btn-xs" href="{% url 'article:author_articles' article.author.username%}"  data-toggle="tooltip" data-placement="right" title="只看此作者的问题">{{article.author.username}}</a></p>
+    				<p class="list-group-item-text">问题所有者：<a type="button" class="btn btn-danger btn-xs" href="{% url 'article:author_articles' article.author.username%}"  data-toggle="tooltip" data-placement="right" title="只看此作者的问题">{{article.author.username}}</a>
+                    <a type="button" class="btn btn-primary btn-xs" style="margin-left: 10px"><span class="glyphicon glyphicon-plus">关注</span></a></p>
     				<p class="list-group-item-text">问题所属栏目：</p><button type="button" class="btn btn-info btn-xs">{{article.column}}</button>
     				<!-- <p class="list-group-item-text">问题概要：{{article.body|truncatechars:100|linebreaks}}</p> -->
     		</div>

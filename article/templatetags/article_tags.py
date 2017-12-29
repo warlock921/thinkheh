@@ -9,7 +9,7 @@ from django import template
 
 register = template.Library()
 
-from article.models import AriticlePost
+from article.models import AriticlePost,FollowUser
 from django.db.models import Count
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User

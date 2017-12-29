@@ -6,7 +6,7 @@
 # @Version : $Id$
 
 from django import forms 
-from .models import AriticleColumn,AriticlePost,Comment,ArticleTag
+from .models import AriticleColumn,AriticlePost,Comment,ArticleTag,FollowUser
 
 #问题标签表单
 class AriticleColumnForm(forms.ModelForm):
@@ -31,7 +31,11 @@ class ArticleTagForm(forms.ModelForm):
 	class Meta:
 		model = ArticleTag 
 		fields = ('tag',)
-	
+
+class FollowUserForm(forms.ModelForm):
+	class Meta:
+		model = FollowUser
+		fields = ('follow_user',)
 
 
 		

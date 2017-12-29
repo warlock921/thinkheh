@@ -36,7 +36,9 @@
 							</tr>
 						</table>
 					</p>
-					<p>问题所有者：<a type="button" class="btn btn-danger btn-xs" href="{% url 'article:author_articles' article.author.username%}"  data-toggle="tooltip" data-placement="right" title="看此作者的所有问题">{{ article.author.username }}</a></p>
+					<p>问题所有者：<a type="button" class="btn btn-danger btn-xs" href="{% url 'article:author_articles' article.author.username%}"  data-toggle="tooltip" data-placement="right" title="看此作者的所有问题">{{ article.author.username }}</a>
+					<a type="button" class="btn btn-primary btn-xs" style="margin-left: 40px"><span class="glyphicon glyphicon-plus"> 关注 </span></a>
+					</p>
 					问题所属栏目：<a type="button" class="btn btn-info btn-xs">{{ article.column }}</a>
 					你的IP地址：<a type="button" class="btn btn-info btn-xs">{{ new_user_ip }}</a>
 				</header>

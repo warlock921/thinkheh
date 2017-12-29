@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% load article_tags %}
+
+{% block title %}
+    话题列表
+{% endblock title %}
+
+{% block content %}
+    <div class="row text-center vertical-middle-sm">
+    	<h1>你有问题，我有答案，我们携手前行</h1>
+       <!--  <p>这里有{% total_articles %}个问题供你参考</p> -->
+    </div>
+    <div class="container">
+        <div class="col-md-8">
+    	{% for article in articles %}
+    		<div class="list-group">
+    			<h4 class="list-group-item-heading"><a href="{{article.get_url_path}}" class="list-group-item active">{{article.title}}</a></h4>
+                            <p class="list-group-item-text">
+                            <table>
+                                <tr>
+                                    {% for tag in article.article_tag.all %}
+                                       <td><span class="label label-default" style="margin-right: 10px">{{ tag.tag }}</span></td>
+                                    {% endfor %}
+                                </tr>
+                            </table>
+                            </p>
+    				<p class="list-group-item-text">问题所有者：<a type="button" class="btn btn-danger btn-xs" href="{% url 'article:author_articles' article.author.username%}"  data-toggle="tooltip" data-placement="right" title="只看此作者的问题">{{article.author.username}}</a></p>
+    				<p class="list-group-item-text">问题所属栏目：</p><button type="button" class="btn btn-info btn-xs">{{article.column}}</button>
+    				<!-- <p class="list-group-item-text">问题概要：{{article.body|truncatechars:100|linebreaks}}</p> -->
+    		</div>
+    	{% endfor %}
+    	{% include 'paginator.html' %}
+    </div>
+    <div class="col-md-4">
+        <div>
+            {% if userinfo.photo %}
+                <img src="{{ userinfo.photo | striptags }}" class="img-circle" id="my_photo" name="user_face">
+            {% else %}
+                <img name="user_face" src="{% static 'images/timg.jpg' %}" class="img-circle" id="my_photo">
+            {% endif %}
+        </div>
+        <div>
+            <p>{{ user_name_article.username }}</p>
+            <p>共发布{% author_total_article user_name_article %}问题</p>
+            {% if userinfo.company != "" %}
+                <p>{{ userinfo.company }}</p>
+                <p>{{ userinfo.aboutme }}</p>
+                dfadsfasdf
+            {% else %}
+                <p><a class="btn btn-info btn-xs" type="button" href="{% url 'account:edit_my_info' %}">设置个人信息</a></p>
+            {% endif %}
+        </div>
+    </div>
+    </div>
+
+{% endblock content %}

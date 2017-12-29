@@ -34,8 +34,7 @@ class UserInfo(models.Model):
 	address = models.CharField(max_length=100,blank=True)
 	#自我介绍
 	aboutme = models.TextField(blank=True)
-
-
+	
 	class Meta:
 		verbose_name = "用户信息管理"
 		verbose_name_plural = "用户信息管理"
