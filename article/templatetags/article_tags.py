@@ -9,7 +9,7 @@ from django import template
 
 register = template.Library()
 
-from article.models import AriticlePost,FollowUser
+from article.models import AriticlePost
 from django.db.models import Count
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
@@ -36,5 +36,4 @@ def most_commented_articles(n=5):
 @register.filter(name='markdown')
 def markdown_filter(text):
 	return mark_safe(markdown.markdown(text))
-
 

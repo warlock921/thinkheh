@@ -24,4 +24,5 @@ urlpatterns = [
 	url(r'^password-reset-complete/$', auth_views.password_reset_complete, {"template_name":"account/password_reset_complete.html"}, name="password_reset_complete"),
 	url(r'^my-info/$', views.myself, name="my_info"),
 	url(r'^edit-my-info/$', views.myself_edit, name="edit_my_info"),
+	url(r'^to_follow_user/$', views.to_follow_user, name="follow_user"),
 ]

@@ -38,7 +38,7 @@ def register(request):
 		userprofile_form = UserProfileForm()
 		return render(request,"account/register.html",{"form":user_form,"profile":userprofile_form})
 
-#此方法已经被系统方法替代，不起作用了
+#此方法已经被django框架的自有方法替代，不起作用了
 def user_login(request):
 	userprofile = UserProfile.objects.get(user=request.user)
 	if request.method == "POST":
@@ -105,3 +105,12 @@ def myself_edit(request):
 		userprofile_form = UserProfileForm(initial={"birth":userprofile.birth,"phone":userprofile.phone,"sex":userprofile.sex,"company_or_person":userprofile.company_or_person})
 		userinfo_form = UserInfoForm(initial={"company":userinfo.company,"SUC_code":userinfo.SUC_code,"profession":userinfo.profession,"address":userinfo.address,"aboutme":userinfo.aboutme})
 		return render(request, "account/myself_edit.html", {"user_form":user_form, "userprofile_form":userprofile_form, "userinfo_form":userinfo_form})
+
+@login_required(login_url='/account/login')
+def to_follow_user(request):
+	followed_user = FollowUser.objects.get(id=request.user.id)
+	print(followed_user)
+	if followed_user :
+		return followed_user
+	else:
+		pass

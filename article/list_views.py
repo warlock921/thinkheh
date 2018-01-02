@@ -15,7 +15,7 @@ from django.http import HttpResponse
 import redis
 from django.conf import settings
 
-from .models import AriticleColumn,AriticlePost,Comment,FollowUser
+from .models import AriticleColumn,AriticlePost,Comment
 from .forms import CommentForm
 from account.models import UserProfile
 
@@ -176,29 +176,3 @@ def like_article(request):
 				return HttpResponse("2")
 		except Exception as e:
 			return HttpResponse("no")
-
-#关注视图
-@csrf_exempt
-@require_POST       #这里表示只接受POST事件
-@login_required(login_url='/account/login')
-def follow_user(request):
-	follow_user_id = request.POST.get("user_id")
-	action = request.POST.get("action")
-	
-	# if request.method == "GET":
-	# 	follow_set = FollowUser.objects.all()
-	# 	return render(request,)
-	
-	if follow_user_id and action:
-		follow_set = FollowUser.objects.filter(id=user_id)
-		print(follow_set)
-		# try:
-			
-		# 	if action == "follow":
-		# 		follow_set.
-		# 		return HttpResponse("1")
-		# 	else:
-		# 		follow_set.follow_user.remove(request.user)
-		# except Exception as e:
-		# 	print(e)
-		# 	return HttpResponse("Failed")

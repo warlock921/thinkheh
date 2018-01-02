@@ -25,6 +25,10 @@ class ArticleTag(models.Model):
 	def __str__(self):
 		return self.tag
 
+	class Meta:
+		verbose_name = "问题标签管理"
+		verbose_name_plural = "问题标签管理"
+
 #问答主题发布-数据库模型
 class AriticlePost(models.Model):
 	author = models.ForeignKey(User,verbose_name="作者",related_name="article")
@@ -36,11 +40,13 @@ class AriticlePost(models.Model):
 	created = models.DateTimeField(verbose_name="创建日期", default=timezone.now)
 	updated = models.DateTimeField(verbose_name="更新日期", auto_now=True)
 	users_like = models.ManyToManyField(User,verbose_name="点赞数", related_name="articles_like", blank=True)
-	article_tag = models.ManyToManyField(ArticleTag, related_name='article_tag', blank=True)
+	article_tag = models.ManyToManyField(ArticleTag,verbose_name="问题标签", related_name='article_tag', blank=True)
 	
 	class Meta:
 		ordering = ("-updated",)
 		index_together = (('id','slug'),)
+		verbose_name = "问题主题内容管理"
+		verbose_name_plural = "问题主题内容管理"
 
 	def __str__(self):
 		return self.title
@@ -58,33 +64,19 @@ class AriticlePost(models.Model):
 #问题评论或答案发布-数据库模型
 class Comment(models.Model):
 	article = models.ForeignKey(AriticlePost,verbose_name="问题外键", related_name="comments")
-	commentator = models.CharField(max_length=90)
-	body = models.TextField()
-	created = models.DateTimeField(auto_now_add=True)
+	commentator = models.CharField(verbose_name="回答问题的人",max_length=90)
+	body = models.TextField(verbose_name="答案的内容")
+	created = models.DateTimeField(verbose_name="答案创建时间", auto_now_add=True)
 	#is_best_answer = models.BooleanField(default=False)
 
 	class Meta:
 		ordering = ('-created',)
+		verbose_name = "问题答案管理"
+		verbose_name_plural = "问题答案管理"
 
 	def __str__(self):
 		return "Comment by {0} on {1}".format(self.commentator,self.article)
 
-class FollowUser(models.Model):
-	#用户关注的其他用户
-	follow_user = models.ForeignKey(User,verbose_name="用户关注的其他用户", related_name="user_follow")
-	#是否已经关注
-	follow_flag = models.BooleanField(default=False)
-	#关注的时间
-	follow_time = models.DateTimeField(verbose_name="关注日期", default=timezone.now)
-	#取关的时间
-	unfollow_time = models.DateTimeField(verbose_name="取关日期", auto_now=True)
-
-	class Meta:
-		ordering = ('-follow_time',)
-
-	def __str__(self):
-		return self.follow_user
-		
 
 
 		

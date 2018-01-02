@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import User
 
 class UserProfile(models.Model):
@@ -41,3 +42,18 @@ class UserInfo(models.Model):
 
 	def __str__(self):
 		return 'user {}'.format(self.user.username)
+
+class FollowUser(models.Model):
+	follow_user = models.ManyToManyField(User,related_name="follow_user",blank=True)
+	follow_time = models.DateField(verbose_name='关注日期',auto_now_add=True)
+
+	class Meta:
+		ordering = ('follow_time',)
+		verbose_name = "关注用户管理"
+		verbose_name_plural = "关注用户管理"
+
+	def __str__(self):
+		return 'follow_user {}'.format(self.follow_user.username)
+
+
+		
