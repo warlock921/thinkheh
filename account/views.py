@@ -106,3 +106,12 @@ def myself_edit(request):
 		userinfo_form = UserInfoForm(initial={"company":userinfo.company,"SUC_code":userinfo.SUC_code,"profession":userinfo.profession,"address":userinfo.address,"aboutme":userinfo.aboutme})
 		return render(request, "account/myself_edit.html", {"user_form":user_form, "userprofile_form":userprofile_form, "userinfo_form":userinfo_form})
 
+@login_required(login_url='/account/login')
+def user_list(request):
+	users = User.objects.filter(is_active=True)
+	return render(request,"account/list.html",{"section":section,"users":users})
+
+@login_required(login_url='/account/login')
+def user_detail():
+	pass
+
