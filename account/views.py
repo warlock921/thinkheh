@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,get_object_or_404
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate,login
@@ -106,11 +106,3 @@ def myself_edit(request):
 		userinfo_form = UserInfoForm(initial={"company":userinfo.company,"SUC_code":userinfo.SUC_code,"profession":userinfo.profession,"address":userinfo.address,"aboutme":userinfo.aboutme})
 		return render(request, "account/myself_edit.html", {"user_form":user_form, "userprofile_form":userprofile_form, "userinfo_form":userinfo_form})
 
-@login_required(login_url='/account/login')
-def to_follow_user(request):
-	followed_user = FollowUser.objects.get(id=request.user.id)
-	print(followed_user)
-	if followed_user :
-		return followed_user
-	else:
-		pass

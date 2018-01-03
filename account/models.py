@@ -44,8 +44,9 @@ class UserInfo(models.Model):
 		return 'user {}'.format(self.user.username)
 
 class FollowUser(models.Model):
-	follow_user = models.ManyToManyField(User,related_name="follow_user",blank=True)
-	follow_time = models.DateField(verbose_name='关注日期',auto_now_add=True)
+	user_from = models.ForeignKey(User,related_name="rel_user_from",default=1,blank=True)
+	user_to = models.ForeignKey(User,related_name="rel_user_to",default=1,blank=True)
+	follow_time = models.DateTimeField(auto_now_add=True,db_index=True)
 
 	class Meta:
 		ordering = ('follow_time',)
@@ -53,7 +54,6 @@ class FollowUser(models.Model):
 		verbose_name_plural = "关注用户管理"
 
 	def __str__(self):
-		return 'follow_user {}'.format(self.follow_user.username)
+		return '{} follow_user {}'.format(self.user_from,self.user_to)
 
-
-		
+User.add_to_class('following',models.ManyToManyField('self',through=FollowUser,related_name='followers',symmetrical=False))
