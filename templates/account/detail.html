@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}
+    个人中心
+{% endblock title %}
+
+{% block content %}
+    <div class="row text-center vertical-middle-sm">
+    	<h1>{{userprofile.company_or_person}}信息中心</h1>
+    	<div class="row">
+    		<div class="col-md-6">
+    			<div class="row">
+    				<div class="col-md-4 text-right"><span>用户名：</span></div>
+    				<div class="col-md-8 text-left">{{user_obj.username}}
+                        {% with total_followers=user_obj.followers.count %}
+                        <span class="label label-default" style="margin-left: 20px">
+                            <span>{{ total_followers }}</span>
+                            follower{{ total_followers|pluralize }}
+                        </span>
+                        <a type="button" class="btn btn-primary btn-xs" href="#" data-id="{{ user_obj.id }}" data-action="{% if request.user in user_obj.followers.all %}un{% endif %}follow" style="margin-left: 10px">
+                            <span class="glyphicon glyphicon-plus">
+                            {% if request.user not in user_obj.followers.all %}
+                                关注他
+                            {% else %}
+                                取消关注
+                            {% endif %}
+                            </span>
+                        </a>
+                        {% endwith %}
+
+                    </div>
+    			</div>
+    			<div class="row">
+    				<div class="col-md-4 text-right"><span>邮箱：</span></div>
+    				<div class="col-md-8 text-left">{{user_obj.email}}</div>
+    			</div>
+                <div class="row">
+                    <div class="col-md-4 text-right"><span>性别：</span></div>
+                    <div class="col-md-8 text-left">{{userprofile.sex}}</div>
+                </div>
+    			<div class="row">
+    				<div class="col-md-4 text-right"><span>生日：</span></div>
+    				<div class="col-md-8 text-left">{{userprofile.birth}}</div>
+    			</div>
+    			<div class="row">
+    				<div class="col-md-4 text-right"><span>手机：</span></div>
+    				<div class="col-md-8 text-left">{{userprofile.phone}}</div>
+    			</div>
+                <div class="row">
+                    <div class="col-md-4 text-right"><span>注册类型：</span></div>
+                    <div class="col-md-8 text-left">{{userprofile.company_or_person}}</div>
+                </div>
+    			<div class="row">
+    				<div class="col-md-4 text-right"><span>工作单位：</span></div>
+    				<div class="col-md-8 text-left">{{userinfo.company}}</div>
+    			</div>
+    			<div class="row">
+    				<div class="col-md-4 text-right"><span>社会统一信用代码：</span></div>
+    				<div class="col-md-8 text-left">{{userinfo.SUC_code}}</div>
+    			</div>
+    			<div class="row">
+    				<div class="col-md-4 text-right"><span>职业：</span></div>
+    				<div class="col-md-8 text-left">{{userinfo.profession}}</div>
+    			</div>
+    			<div class="row">
+    				<div class="col-md-4 text-right"><span>地址：</span></div>
+    				<div class="col-md-8 text-left">{{userinfo.address}}</div>
+    			</div>
+    			<div class="row">
+    				<div class="col-md-4 text-right"><span>个人介绍：</span></div>
+    				<div class="col-md-8 text-left">{{userinfo.aboutme}}</div>
+    			</div>
+    		</div>
+    		<div class="col-md-6">
+    			<div style="margin-right: 100px"><img src="{% static 'images/timg.jpg' %}" class="img-circle" width="270px" id="my_photo"></div>
+                <div style="margin-right: 100px"><button class="btn btn-primary btn-lg" id="upload_image" onclick="upload_image_layer()">上传我的照片</button></div>
+    		</div>
+    	</div>
+    </div>
+<script type="text/javascript">
+     $('a.follow').click(function(e){
+       e.preventDefault();
+       $.post('{% url "user_follow" %}',
+         {
+           id: $(this).data('id'),
+           action: $(this).data('action')
+         },
+         function(data){
+           if (data['status'] == 'ok') {
+             var previous_action = $('a.follow').data('action');
+             
+             // toggle data-action
+             $('a.follow').data('action',
+               previous_action == 'follow' ? 'unfollow' : 'follow');
+             // toggle link text
+             $('a.follow').text(
+               previous_action == 'follow' ? 'Unfollow' : 'Follow');
+               
+             // update total followers
+             var previous_followers = parseInt(
+               $('span.count .total').text());
+             $('span.count .total').text(previous_action == 'follow' ? previous_followers + 1 : previous_followers - 1);
+          }
+        }
+      });
+    });
+</script>
+{% endblock content %}
+
+

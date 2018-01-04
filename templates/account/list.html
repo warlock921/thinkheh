@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}用户展示{% endblock %}
+{% block content %}
+    <h1>用户</h1>
+    <hr>
+    <div id="people-list">
+       {% for user in users %}
+         <div class="user">
+            <a href="{% url 'account:user_detail' user.username%}">
+             用户的头像在这里
+           </a>
+           <div class="info">
+             <a href="{% url 'account:user_detail' user.username%}" class="title">
+               {{ user.username }}
+             </a> 
+           </div>
+         </div>
+       {% endfor %}
+    </div>
+{% endblock %}

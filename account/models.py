@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
 class UserProfile(models.Model):
 	SEX_CHOICES = (('男', '男'),('女', '女'),)
@@ -11,8 +12,8 @@ class UserProfile(models.Model):
 	sex = models.CharField(max_length=2,choices=SEX_CHOICES,default='男')
 	company_or_person = models.CharField(max_length=2,choices=RE_KIND,default='个人')
 	#用户ip地址
-	user_ip = models.CharField(max_length=18,null=True)
-	last_article_id = models.IntegerField(null=True)
+	user_ip = models.CharField(max_length=18,null=True,blank=True)
+	last_article_id = models.IntegerField(null=True,blank=True)
 	# ID_card = models.CharField(max_length=18,null=True)
 	# company_name = models.CharField(max_length=300,null=True,blank=True)
 
@@ -52,6 +53,9 @@ class FollowUser(models.Model):
 		ordering = ('follow_time',)
 		verbose_name = "关注用户管理"
 		verbose_name_plural = "关注用户管理"
+
+	def get_absolute_url(self):
+		return reverse("account:user_detail", args=[self.username])
 
 	def __str__(self):
 		return '{} follow_user {}'.format(self.user_from,self.user_to)
