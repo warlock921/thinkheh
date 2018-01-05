@@ -2,20 +2,83 @@
 {% load staticfiles %}
 {% block title %}用户展示{% endblock %}
 {% block content %}
-    <h1>用户</h1>
-    <hr>
-    <div id="people-list">
-       {% for user in users %}
-         <div class="user">
-            <a href="{% url 'account:user_detail' user.username%}">
-             用户的头像在这里
-           </a>
-           <div class="info">
-             <a href="{% url 'account:user_detail' user.username%}" class="title">
-               {{ user.username }}
-             </a> 
-           </div>
-         </div>
-       {% endfor %}
-    </div>
+  <h1>用户</h1>
+  <hr>
+  <div id="container">
+    {% for user in users %}
+      {% if request.user != user %}
+        <div class="col-md-3">
+          <div class="thumbnail">
+            <a href="{% url 'account:user_detail' user.username%}"><img src="{% static 'images/timg.jpg' %}" ></a>
+            <div class="caption">
+              <h3>{{ user.username }}</h3>
+              <hr>
+
+              {% for userinfo in userinfos %}
+                {% if user.id == userinfo.user_id %}
+                    <p>简介：{{userinfo.aboutme | slice:'10'}}</p>
+                    <p>公司地址：{{userinfo.address | slice:'10'}}</p>
+                {% endif %}  
+              {% endfor %}
+              <hr>
+              <p>{% with total_followers=user.followers.count %}
+                <span class="label label-default">
+                  <span>{{ total_followers }}</span>
+                  follower{{ total_followers|pluralize }}
+                </span>
+                <a id="follow" type="button" class="btn btn-primary btn-xs" href="#" onclick="to_follow({{ user.id }},'{% if request.user in user.followers.all %}un{% endif %}follow')" data-id="{{ user.id }}" data-action="{% if request.user in user.followers.all %}un{% endif %}follow" style="margin-left: 10px">
+                <span class="glyphicon glyphicon-plus">
+                  {% if request.user not in user.followers.all %}
+                    关注他
+                  {% else %}
+                    取消关注
+                  {% endif %}
+                </span>
+              </a>
+            {% endwith %}</p>
+          </div>
+        </div>
+      </div>
+{% endif %}
+{% endfor %}
+</div>
+<script type="text/javascript" src='{% static "js/jquery.js" %}'></script>
+    <script type="text/javascript" src='{% static "js/layer.js" %}'></script>
+    <!-- 关注用的Ajax函数 -->
+    <script type="text/javascript">
+        function to_follow(id,action){
+            $.ajax({
+                url:"{% url 'account:user_follow' %}",
+                type:"POST",
+                data:{"id":id, "action":action},
+                // alert(data);
+                success:function(data){
+                   if (data['status'] == 'ok') {
+                     var previous_action = $('a.follow').data('action');
+                     
+                     // toggle data-action
+                     $('a.follow').data('action',
+                       previous_action == 'follow' ? 'unfollow' : 'follow');
+                     // toggle link text
+                     $('a.follow').text(
+                       previous_action == 'follow' ? 'Unfollow' : 'Follow');
+                       
+                     // update total followers
+                     var previous_followers = parseInt(
+                       $('span.count .total').text());
+                       $('span.count .total').text(previous_action == 'follow' ? previous_followers + 1 : previous_followers - 1);
+
+                    if (action=='follow'){
+                        layer.msg("已关注");
+                        setTimeout("location.reload();",1000);
+                    }else{
+                        layer.msg("已取消关注");
+                        setTimeout("location.reload();",1000);
+                    }
+                    
+                  }
+                }
+            });
+        }
+    </script>
 {% endblock %}

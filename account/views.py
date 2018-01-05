@@ -113,14 +113,8 @@ def myself_edit(request):
 @login_required(login_url='/account/login')
 def user_list(request):
 	users = User.objects.filter(is_active=True)
-	return render(request,"account/list.html",{"section":"people","users":users})
-
-@login_required(login_url='/account/login')
-def user_detail(request,username):
-	user_obj = get_object_or_404(User,username=username,is_active=True)
-	userprofile = UserProfile.objects.get(user=user_obj)
-	userinfo = UserInfo.objects.get(user=user_obj)
-	return render(request,"account/detail.html",{"section":"people","user_obj":user_obj,"userprofile":userprofile,"userinfo":userinfo})
+	userinfos = UserInfo.objects.all()
+	return render(request,"account/list.html",{"users":users,"userinfos":userinfos})
 
 @csrf_exempt
 @require_POST
@@ -128,6 +122,7 @@ def user_detail(request,username):
 def user_follow(request):
 	user_id = request.POST.get('id')
 	action = request.POST.get('action')
+	print(user_id,action)
 	if user_id and action:
 		try:
 			user = User.objects.get(id=user_id)
@@ -139,4 +134,13 @@ def user_follow(request):
 		except User.DoesNotExist:
 			return JsonResponse({'status':'ko'})
 	return JsonResponse({'status':'ko'})
+
+@login_required(login_url='/account/login')
+def user_detail(request,username):
+	user_obj = get_object_or_404(User,username=username,is_active=True)
+	userprofile = UserProfile.objects.get(user=user_obj)
+	userinfo = UserInfo.objects.get(user=user_obj)
+	return render(request,"account/detail.html",{"user_obj":user_obj,"userprofile":userprofile,"userinfo":userinfo})
+
+
 

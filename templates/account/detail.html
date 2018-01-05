@@ -19,7 +19,7 @@
                             <span>{{ total_followers }}</span>
                             follower{{ total_followers|pluralize }}
                         </span>
-                        <a type="button" class="btn btn-primary btn-xs" href="#" data-id="{{ user_obj.id }}" data-action="{% if request.user in user_obj.followers.all %}un{% endif %}follow" style="margin-left: 10px">
+                        <a id="follow" type="button" class="btn btn-primary btn-xs" href="#" onclick="to_follow({{ user_obj.id }},'{% if request.user in user_obj.followers.all %}un{% endif %}follow')" data-id="{{ user.id }}" data-action="{% if request.user in user.followers.all %}un{% endif %}follow" style="margin-left: 10px">
                             <span class="glyphicon glyphicon-plus">
                             {% if request.user not in user_obj.followers.all %}
                                 关注他
@@ -79,34 +79,44 @@
     		</div>
     	</div>
     </div>
-<script type="text/javascript">
-     $('a.follow').click(function(e){
-       e.preventDefault();
-       $.post('{% url "user_follow" %}',
-         {
-           id: $(this).data('id'),
-           action: $(this).data('action')
-         },
-         function(data){
-           if (data['status'] == 'ok') {
-             var previous_action = $('a.follow').data('action');
-             
-             // toggle data-action
-             $('a.follow').data('action',
-               previous_action == 'follow' ? 'unfollow' : 'follow');
-             // toggle link text
-             $('a.follow').text(
-               previous_action == 'follow' ? 'Unfollow' : 'Follow');
-               
-             // update total followers
-             var previous_followers = parseInt(
-               $('span.count .total').text());
-             $('span.count .total').text(previous_action == 'follow' ? previous_followers + 1 : previous_followers - 1);
-          }
-        }
-      });
-    });
-</script>
-{% endblock content %}
+    <script type="text/javascript" src='{% static "js/jquery.js" %}'></script>
+    <script type="text/javascript" src='{% static "js/layer.js" %}'></script>
+    <!-- 关注用的Ajax函数 -->
+    <script type="text/javascript">
+        function to_follow(id,action){
+            $.ajax({
+                url:"{% url 'account:user_follow' %}",
+                type:"POST",
+                data:{"id":id, "action":action},
+                // alert(data);
+                success:function(data){
+                   if (data['status'] == 'ok') {
+                     var previous_action = $('a.follow').data('action');
+                     
+                     // toggle data-action
+                     $('a.follow').data('action',
+                       previous_action == 'follow' ? 'unfollow' : 'follow');
+                     // toggle link text
+                     $('a.follow').text(
+                       previous_action == 'follow' ? 'Unfollow' : 'Follow');
+                       
+                     // update total followers
+                     var previous_followers = parseInt(
+                       $('span.count .total').text());
+                       $('span.count .total').text(previous_action == 'follow' ? previous_followers + 1 : previous_followers - 1);
 
+                    if (action=='follow'){
+                        layer.msg("已关注");
+                        setTimeout("location.reload();",1000);
+                    }else{
+                        layer.msg("已取消关注");
+                        setTimeout("location.reload();",1000);
+                    }
+                    
+                  }
+                }
+            });
+        }
+    </script>
+{% endblock content %}
 
