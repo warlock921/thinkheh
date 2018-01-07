@@ -18,6 +18,7 @@ from django.conf import settings
 from .models import AriticleColumn,AriticlePost,Comment
 from .forms import CommentForm
 from account.models import UserProfile
+from actions.utils import create_action
 
 #redis服务器连接设置，具体参数在settings文件配置
 r = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB)
@@ -134,6 +135,8 @@ def article_detail(request,id,slug):
 				# print(new_comment.commentator)
 				new_comment.article = article
 				new_comment.save()
+				#记录用户动作
+				create_action(request.user, '评论了', article.title)
 				return HttpResponse("1")
 			except Exception as e:
 				return HttpResponse("2")
@@ -170,6 +173,8 @@ def like_article(request):
 			article = AriticlePost.objects.get(id=article_id)
 			if action == "like":
 				article.users_like.add(request.user)
+				#记录用户动作
+				create_action(request.user, '点赞', article.title)
 				return HttpResponse("1")
 			else:
 				article.users_like.remove(request.user)

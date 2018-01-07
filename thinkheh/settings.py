@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'mainsite',
     'account',
     'article',
+    'actions',
 ]
 
 MIDDLEWARE = [
@@ -86,7 +87,7 @@ DATABASES = {
         'NAME': 'thinkheh',
         'USER': 'root',
         'PASSWORD': 'P@ssword',
-        "HOST": "192.168.10.201",
+        "HOST": "localhost",
 
     }
 }
@@ -122,7 +123,7 @@ USE_I18N = True
 
 USE_L10N = False
 
-USE_TZ = False
+USE_TZ = True
 
 DATETIME_FORMAT = 'Y-m-d H:i:s'  # suit在admin里设置时间的一个小bug。需要把时间格式指定一下
 DATE_FORMAT = 'Y-m-d'
@@ -174,7 +175,7 @@ MEDIA_URL = '/static/image_upload/'
 MEDIA_ROOT = os.path.join(BASE_DIR,"static/image_upload/").replace('\\','/')
 
 #Redis设置,这里是必须的，请勿修改参数,host参数地址指向的是数据库服务器（可按需修改）
-REDIS_HOST = '192.168.10.201'    #按需修改，localhost 或 数据库所在服务器IP地址
+REDIS_HOST = 'localhost'    #按需修改，localhost 或 数据库所在服务器IP地址
 REDIS_PORT = 6379   #端口号请勿修改
 REDIS_DB = 0        #DB参数请勿修改
 

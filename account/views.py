@@ -11,6 +11,8 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 
+from actions.utils import create_action
+
 def register(request):
 	if request.method == "POST":
 		user_form = RegistrationForm(request.POST)
@@ -29,11 +31,14 @@ def register(request):
 				new_user.set_password(user_form.cleaned_data['password'])
 				new_user.save()
 
+
 				new_userprofile = userprofile_form.save(commit=False)
 				new_userprofile.user = new_user
 				new_userprofile.user_ip = request.META['REMOTE_ADDR']
 				new_userprofile.save()
 				UserInfo.objects.create(user=new_user)
+				#记录用户动作
+				create_action(new_user, '创建了账户')
 				return render(request, "registration/login.html", { 'form':user_form })
 		else:
 			return HttpResponse("对不起，您不能注册！")
@@ -103,6 +108,8 @@ def myself_edit(request):
 			user.save()
 			userprofile.save()
 			userinfo.save()
+			#记录用户动作
+			create_action(user, '修改了用户信息')
 		return HttpResponseRedirect('/account/my-info/')
 	else:
 		user_form = UserForm(instance=request.user)
@@ -128,6 +135,8 @@ def user_follow(request):
 			user = User.objects.get(id=user_id)
 			if action == 'follow':
 				FollowUser.objects.get_or_create(user_from=request.user,user_to=user)
+				#记录用户动作
+				create_action(request.user, ' 关注了 ', user)
 			else:
 				FollowUser.objects.filter(user_from=request.user,user_to=user).delete()
 			return JsonResponse({'status':'ok'})

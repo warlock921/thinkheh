@@ -6,7 +6,7 @@
   <hr>
   <div id="container">
     {% for user in users %}
-      {% if request.user != user %}
+      {% if request.user != user and user.is_superuser == False %}
         <div class="col-md-3">
           <div class="thumbnail">
             <a href="{% url 'account:user_detail' user.username%}"><img src="{% static 'images/timg.jpg' %}" ></a>
@@ -29,9 +29,9 @@
                 <a id="follow" type="button" class="btn btn-primary btn-xs" href="#" onclick="to_follow({{ user.id }},'{% if request.user in user.followers.all %}un{% endif %}follow')" data-id="{{ user.id }}" data-action="{% if request.user in user.followers.all %}un{% endif %}follow" style="margin-left: 10px">
                 <span class="glyphicon glyphicon-plus">
                   {% if request.user not in user.followers.all %}
-                    关注他
+                  关注他
                   {% else %}
-                    取消关注
+                  取消关注
                   {% endif %}
                 </span>
               </a>
