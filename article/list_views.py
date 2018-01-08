@@ -136,10 +136,11 @@ def article_detail(request,id,slug):
 				new_comment.article = article
 				new_comment.save()
 				#记录用户动作
-				create_action(request.user, '评论了', article.title)
+				create_action(request.user, '评论了', article)
 				return HttpResponse("1")
 			except Exception as e:
 				return HttpResponse("2")
+
 		else:
 			return HttpResponse("3")
 	else:
@@ -157,8 +158,6 @@ def article_detail(request,id,slug):
 	except EmptyPage:
 		current_page = paginator.page(paginator.num_pages)
 		answers = current_page.object_list
-	#return render(request, "article/list/article_titles.html", {"answers":answers, "page":current_page})
-
 	return render(request, "article/list/article_detail.html", {"article":article, "total_views":total_views, "most_viewed":most_viewed, "new_user_ip":new_user_ip, "comment_num_list":comment_num_list, "comment_form":comment_form, "user_list":user_list, "answers":answers, "page":current_page})
 
 #指定问题点赞视图
@@ -174,10 +173,12 @@ def like_article(request):
 			if action == "like":
 				article.users_like.add(request.user)
 				#记录用户动作
-				create_action(request.user, '点赞', article.title)
+				create_action(request.user, '点赞', article)
 				return HttpResponse("1")
 			else:
 				article.users_like.remove(request.user)
+				#记录用户动作
+				create_action(request.user, '不喜欢', article)
 				return HttpResponse("2")
 		except Exception as e:
 			return HttpResponse("no")

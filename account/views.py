@@ -139,6 +139,8 @@ def user_follow(request):
 				create_action(request.user, ' 关注了 ', user)
 			else:
 				FollowUser.objects.filter(user_from=request.user,user_to=user).delete()
+				#记录用户动作
+				create_action(request.user, ' 取消关注 ', user)
 			return JsonResponse({'status':'ok'})
 		except User.DoesNotExist:
 			return JsonResponse({'status':'ko'})

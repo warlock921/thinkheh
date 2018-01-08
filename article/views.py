@@ -16,6 +16,8 @@ from django.core.files.base import ContentFile
 from .forms import AriticleColumnForm,AriticlePostForm,ArticleTagForm
 from .models import AriticleColumn,AriticlePost,ArticleTag
 
+from actions.utils import create_action
+
 import json
 
 #话题标签视图
@@ -84,6 +86,8 @@ def article_post(request):
 				new_article.author = request.user
 				new_article.column = request.user.article_column.get(id=request.POST['column_id'])
 				new_article.save()
+				#记录用户动作
+				create_action(request.user, '发布了话题：', new_article)
 
 				tags = request.POST['tags']
 				if tags:
@@ -134,6 +138,8 @@ def del_article(request):
 	try:
 		article = AriticlePost.objects.get(id=article_id)
 		article.delete()
+		#记录用户动作
+		create_action(request.user, '删除了话题：', article)
 		return HttpResponse("1")
 	except Exception as e:
 		return HttpResponse("2")
@@ -156,6 +162,8 @@ def redit_article(request,article_id):
 			redit_article.title = request.POST['title']
 			redit_article.body = request.POST['body']
 			redit_article.save()
+			#记录用户动作
+			create_action(request.user, '修改了话题：', redit_article)
 			return HttpResponse("1")
 		except Exception as e:
 			return HttpResponse("2")
