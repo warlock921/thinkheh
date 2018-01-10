@@ -14,4 +14,3 @@ class UserInfoAdmin(admin.ModelAdmin):
 
 admin.site.register(UserProfile,UserProfileAdmin)
 admin.site.register(UserInfo,UserInfoAdmin)
-
