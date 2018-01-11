@@ -22,5 +22,5 @@ def upload_image(request):
 
 @login_required(login_url='/account/login')
 def list_images(request):
-	images = ImageLoad.objecs.filter(user=request.user)
+	images = ImageLoad.objects.filter(user=request.user)
 	return render(request,'imageload/list_images.html',{"images":images})

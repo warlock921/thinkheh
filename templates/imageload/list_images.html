@@ -1,0 +1,34 @@
+{% extends "article/base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}
+    企业相册
+{% endblock title %}
+
+{% block content %}
+    <div>
+    	<button type="button" class="btn btn-primary btn-lg" onclick="addImage()">从网址获取图片</button>
+    	<button type="button" class="btn btn-primary btn-lg" onclick="addImage()">从本地上传图片</button>
+    	<div style="margin-top: 10px">
+    		<table class="table table-hover">
+    			<tr>
+    				<td>序号</td>
+    				<td>标题</td>
+    				<td>图片</td>
+    				<td>操作</td>
+    			</tr>
+    			{% for image in images %}
+    				<tr>
+    					<td>{{forloop.counter}}</td>
+    					<td>{{image.title}}</td>
+    					<td>{{image.image}}</td>
+    					<td><a name="delete" href="javascript:" onclick="del_image(this,{{image.id}})"><span class="glypyicon glypyicon-trash" style="margin-left: 20px;"></span></a></td>
+    				</tr>
+    			{% empty %}
+    			<p>还没有图片，请点击上面的按钮添加图片</p>
+    			{% endfor %}
+    		</table>
+    	</div>
+    </div>
+{% endblock content %}
