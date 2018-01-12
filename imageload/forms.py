@@ -20,6 +20,7 @@ class ImageLoadForm(forms.ModelForm):
     #处理数据库url字段的值，此方法不接收self以外的参数
 	def clean_url(self):
 		url = self.cleaned_data['url']
+		#print(url);
 		valid_extensions = ['jpg','jpeg','png']
 		extension = url.rsplit('.',1)[1].lower()
 
@@ -27,8 +28,9 @@ class ImageLoadForm(forms.ModelForm):
 			raise forms.ValidationError("您所提供的url无法获取图片")
 		return url
     #重写save方法
-	def save(self,force_insert=False,force_update=False):
+	def save(self,force_insert=False,force_update=False,commit=True):
 		image = super(ImageLoadForm,self).save(commit=False)
+		# print(image)
 		image_url = self.cleaned_data['url']
 		image_name = '{0}.{1}'.format(slugify(image.title),image_url.rsplit('.',1)[1].lower())
 		response = request.urlopen(image_url)

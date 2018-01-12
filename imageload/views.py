@@ -10,7 +10,7 @@ from .models import ImageLoad
 @csrf_exempt
 @require_POST       #这里表示只接受POST事件
 def upload_image(request):
-	form = ImageForm(data=request.POST)
+	form = ImageLoadForm(data=request.POST)
 	if form.is_valid():
 		try:
 			new_item = form.save(commit=False)
