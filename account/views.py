@@ -13,6 +13,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from actions.utils import create_action
 
+from imageload.models import ImageLoad
+
 def register(request):
 	if request.method == "POST":
 		user_form = RegistrationForm(request.POST)
@@ -151,7 +153,8 @@ def user_detail(request,username):
 	user_obj = get_object_or_404(User,username=username,is_active=True)
 	userprofile = UserProfile.objects.get(user=user_obj)
 	userinfo = UserInfo.objects.get(user=user_obj)
-	return render(request,"account/detail.html",{"user_obj":user_obj,"userprofile":userprofile,"userinfo":userinfo})
+	image_list = ImageLoad.objects.filter(user=user_obj)
+	return render(request,"account/detail.html",{"user_obj":user_obj,"userprofile":userprofile,"userinfo":userinfo,"image_list":image_list})
 
 
 

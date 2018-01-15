@@ -1,5 +1,7 @@
 {% extends "article/base.html" %}
 
+{% load thumbnail %}
+
 {% load staticfiles %}
 
 {% block title %}
@@ -8,8 +10,8 @@
 
 {% block content %}
     <div>
-    	<button type="button" class="btn btn-primary btn-lg" onclick="addImage()">从网址获取图片</button>
-    	<button type="button" class="btn btn-primary btn-lg" onclick="addImage()">从本地上传图片</button>
+    	<button type="button" class="btn btn-info btn-lg" onclick="addImage()">从本地上传图片</button>
+    	<button type="button" class="btn btn-default btn-lg" onclick="addImage()">从网址获取图片</button>
     	<div style="margin-top: 10px">
     		<table class="table table-hover">
     			<tr>
@@ -18,22 +20,26 @@
     				<td>图片</td>
     				<td>操作</td>
     			</tr>
-    			{% for image in images %}
+    			{% for image in image_list %}
     				<tr>
     					<td>{{forloop.counter}}</td>
     					<td>{{image.title}}</td>
-    					<td>{{image.image}}</td>
+    					{% thumbnail image.image "100x100" as im %}
+    					<td><img src="{{im.url}}"></td>
+    					{% endthumbnail %}
     					<td><a name="delete" href="javascript:" onclick="del_image(this,{{image.id}})"><span class="glyphicon glyphicon-trash" style="margin-left: 20px;"></span></a></td>
     				</tr>
     			{% empty %}
     			<p>还没有图片，请点击上面的按钮添加图片</p>
     			{% endfor %}
     		</table>
+    		{% include 'paginator.html' %}
     	</div>
     </div>
     <script src='{% static "js/jquery.js" %}'></script>
 	<script src='{% static "js/layer.js" %}'></script>
 	<script type="text/javascript">
+		//从网络地址获取图片js函数
 		function addImage(){
 			var index=layer.open({
 				type:1,
@@ -59,12 +65,44 @@
 								if(status == "1"){
 									layer.close(index);
 									window.location.reload();
+								}else if(status == "2"){
+									layer.msg("上传图片超过10张，请删除当前图片后再次上传！")
+									//layer.close(index);
 								}else{
 									layer.msg("图片无法获取，请更换图片！")
 								}
 							},
 						});
 					});
+				},
+			});
+		}
+
+		//删除图片Js函数
+		function del_image(the,image_id){
+			var image_title = $(the).parents("tr").children("td").eq(1).text();
+			layer.open({
+				type:1,
+				skin:"layui-layer-git",
+				area:["400px","200px"],
+				title:"删除图片",
+				content:'<div class="text-center" style="margin-top:20px"><p>是否确定删除《'+image_title+'》这张图片吗？</p></div>',
+				btn:['确定','取消'],
+				yes:function(){
+					$.ajax({
+						url:'{% url "imageload:del_image" %}',
+						type:"POST",
+						data:{"image_id":image_id},
+						success:function(e){
+							var status =e['status']
+							if(status=="1"){
+								parent.location.reload();
+								layer.msg("已成功删除图片！");
+							}else{
+								layer.msg("删除失败！");
+							}
+						},
+					})
 				},
 			});
 		}
