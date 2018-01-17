@@ -8,8 +8,8 @@
 
 {% block content %}
     <!-- 调用相册展示插件的css文件 -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/enp_album/normalize.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/enp_album/default.css' %}">
+    <!-- <link rel="stylesheet" type="text/css" href="{% static 'css/enp_album/normalize.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/enp_album/default.css' %}"> -->
     <link rel="stylesheet" type="text/css" media="all" href="{% static 'css/enp_album/font-awesome.min.css' %}" />
     <link rel="stylesheet" type="text/css" media="all" href="{% static 'css/enp_album/jgallery.min.css' %}" />
     <!-- 调用相册展示插件的css文件 结束-->
@@ -85,11 +85,15 @@
                 <div style="margin-right: 100px"><button class="btn btn-primary btn-lg" id="upload_image" onclick="upload_image_layer()">上传我的照片</button></div>
     		</div>
     	</div>
+        <hr>
         <div class="row">
-            <div class="htmleaf-content bgcolor-3">
+            <header class="htmleaf-header">
+                <h1><span>企业的风采、企业的文化</span></h1>
+            </header>
+            <div class="htmleaf-content bgcolor-3" style="margin-top: 40px;">
                 <div id="gallery">
                     {% for image in image_list %}
-                        <a href=""><img src="{{image.url}}" alt="{{image.title}}" /></a>
+                        <a href="{{image.image.url}}"><img src="{{image.image.url}}" alt="{{image.description}}" /></a>
                     {% endfor %}
                     
                 </div>
@@ -100,14 +104,31 @@
     <script type="text/javascript" src='{% static "js/layer.js" %}'></script>
     <!-- 调用相册展示插件的js文件 -->
     <script src="{% static 'js/enp_album/jquery-2.0.3.min.js' %}" type="text/javascript"></script>
-    <script type="text/javascript" src="{% static 'js/enp_album/jgallery.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/enp_album/touchswipe.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/enp_album/jgallery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/enp_album/touchswipe.min.js' %}"></script>
     <!-- 调用相册展示插件的js文件 结束-->
 
     <script type="text/javascript">
-        $( function() {
-            $( '#gallery' ).jGallery();
-        } );
+        jQuery(document).ready(function($){
+            $( '#gallery' ).jGallery(
+            {
+                // backgroundColor:'#fff',
+                titleExpanded:true,
+                //提示文字内容定义
+                tooltipSlideshow:'幻灯片播放',
+                tooltipFullScreen:'全屏显示',
+                tooltipRandom:'随机显示',
+                tooltipSeeAllPhotos:'查看所有图片',
+                tooltipToggleThumbnails:'切换缩略图',
+                tooltipZoom:'缩放',
+                // thumbType:'square',
+                //图片切换效果
+                transition:'rotateCarouselLeftOut_rotateCarouselLeftIn',
+                autostart:true
+            }
+            );
+        });
+
     </script>
 
     <!-- 关注用的Ajax函数 -->
