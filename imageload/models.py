@@ -6,11 +6,11 @@ from slugify import slugify
 class ImageLoad(models.Model):
 	user = models.ForeignKey(User, related_name="imageload")
 	title = models.CharField(max_length=300)
-	url = models.URLField(max_length=500,blank=True)
+	url = models.URLField(max_length=500, blank=True)
 	slug = models.SlugField(max_length=500, blank=True)
 	description = models.TextField(blank=True)
 	created = models.DateField(auto_now_add=True,db_index=True)
-	image = models.ImageField(upload_to='images/%Y/%m/%d')
+	image = models.ImageField(upload_to='images/%Y/%m/%d',blank=True)
 
 	def __str__(self):
 		return self.title

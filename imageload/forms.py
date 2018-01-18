@@ -41,8 +41,7 @@ class ImageLoadForm(forms.ModelForm):
 
 		return image
 
-# class ImageLoadFileForm(forms.ModelForm):
-# 	class Meta:
-# 		model = ImageLoad
-# 		fields = ('title','description','image')
-
+class ImageLoadFileForm(forms.ModelForm):
+	class Meta:
+		model = ImageLoad
+		fields = ('title','image','description')

@@ -88,22 +88,38 @@
 				shadeClose:true,
 				title:"本地上传图片",
 				area:['600px','400px'],
-				content:"<div style='padding:20px'><p>请使用扩展名为.jpg或.png的网上照片地址</p><form action='{% url 'imageload:upload_image_from_file' %}' method='POST' enctype='multipart/form-data'>{% csrf_token %}<div class='form-group'><label for='phototitle' class='col-sm-2 control-label'>标题</label><div class='col-sm-10'><input id='phototitle' name='phototitle' type='text' class='form-control' style='margin-bottom:5px'></div></div><div class='form-group'><label for='img_file' name='img_file' class='col-sm-2 control-label'>选择文件</label><div class='col-sm-10'><input id='img_file' name='img_file' style='margin-bottom:5px' type='file'></div></div><div class='form-group'><label for='description' class='col-sm-2 control-label'>描述</label><div class='col-sm-10'><textarea class='form-control' style='margin-bottom:5px' row='2' id='photodescription' name='photodescription'></textarea></div></div><div class='form-group'><div class='col-sm-offset-2 col-sm-10'><button type='submit' class='btn btn-default'>提交</button></div></div></form></div>",
-				success:function(e){
-							var status = e['status'];
-							if(status == "1"){
-								layer.close(index);
-								window.location.reload();
-							}else if(status == "2"){
-								layer.msg("上传图片超过10张，请删除当前图片后再次上传！")
+				content:"<div style='padding:20px'><p>请使用扩展名为.jpg或.png的图片格式，否则无法上传</p><form><div class='form-group'><label for='phototitle' class='col-sm-2 control-label'>标题</label><div class='col-sm-10'><input id='phototitle' type='text' class='form-control' style='margin-bottom:5px'></div></div><div class='form-group'><label for='imgfile' class='col-sm-2 control-label'>图片文件</label><div class='col-sm-10'><input id='imgfile' style='margin-bottom:5px' type='file'></div></div><div class='form-group'><label for='description' class='col-sm-2 control-label'>描述</label><div class='col-sm-10'><textarea class='form-control' style='margin-bottom:5px' row='2' id='photodescription'></textarea></div></div><div class='form-group'><div class='col-sm-offset-2 col-sm-10'><input id='newphoto' type='button' class='btn btn-default' value='提交'></div></div></form></div>",
+				success:function(){
+					$("#newphoto").on('click',function(){
+						var form_data = new FormData()
+						//获取图片文件
+						var file_info = $('#imgfile')[0].files[0];
+						form_data.append('imgfile',file_info);
+						var title = $("#phototitle").val();
+						form_data.append('title',title);
+						var description = $("#photodescription").val();
+						form_data.append('description',description);
+						$.ajax({
+							url:'{% url "imageload:upload_image_from_file" %}',
+							type:"POST",
+							data:form_data,
+							processData: false,  // 不处理数据
+                			contentType: false, // 不设置类型
+							success:function(e){
+								var status = e['status'];
+								if(status == "1"){
+									layer.close(index);
+									window.location.reload();
+								}else if(status == "2"){
+									layer.msg("上传图片超过10张，请删除当前图片后再次上传！")
 									//layer.close(index);
-							}else if(status == "0"){
-								layer.msg("图片无法获取，请更换图片！")
-							}else{
-								layer.msg("加载完毕")
-							}
-				}
-				
+								}else{
+									layer.msg("图片格式不对，请更换图片！")
+								}
+							},
+						});
+					});
+				},
 			});
 		}
 
