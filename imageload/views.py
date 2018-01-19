@@ -8,7 +8,7 @@ from .forms import ImageLoadForm,ImageLoadFileForm
 from .models import ImageLoad
 from slugify import slugify
 from actions.utils import create_action
-
+from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 #通过网址获取图片视图
@@ -68,7 +68,7 @@ def upload_image_from_file(request):
 @login_required(login_url='/account/login')
 def list_images(request):
 	images = ImageLoad.objects.filter(user=request.user)
-	paginator = Paginator(images,5)
+	paginator = Paginator(images,10)
 	page = request.GET.get('page')
 	try:
 		current_page = paginator.page(page)
@@ -87,9 +87,18 @@ def list_images(request):
 @require_POST       #这里表示只接受POST事件
 def del_image(request):
 	image_id = request.POST['image_id']
+	image = ImageLoad.objects.get(id=image_id)
+	#获取图片在服务器的物理位置路径
+	file_path = image.image.url
+	#注意：这里拼接的字符串适用于windows系统测试环境，生产环境不需要replace
+	file_full_path = (settings.BASE_DIR + file_path).replace('/','\\')
+	#生产环境用的file_full_path：
+	#file_full_path = settings.BASE_DIR + file_path
 	try:
-		image = ImageLoad.objects.get(id=image_id)
+		#删除数据库中图片的信息
 		image.delete()
+		#同时删除服务器物理位置的图片
+		os.remove(file_full_path)
 		#记录用户动作
 		create_action(request.user, '删除了图片', image)
 		return JsonResponse({'status':"1"})

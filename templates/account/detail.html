@@ -85,10 +85,13 @@
                 <div style="margin-right: 100px"><button class="btn btn-primary btn-lg" id="upload_image" onclick="upload_image_layer()">上传我的照片</button></div>
     		</div>
     	</div>
-        <hr>
+        
         <div class="row">
             <header class="htmleaf-header">
-                <h1><span>企业的风采、企业的文化</span></h1>
+                {% if image_list %}
+                <hr>
+                    <h1><span>企业的风采、企业的文化</span></h1>
+                {% endif %}
             </header>
             <div class="htmleaf-content bgcolor-3" style="margin-top: 40px;">
                 <div id="gallery">
@@ -108,6 +111,7 @@
     <script type="text/javascript" src="{% static 'js/enp_album/touchswipe.min.js' %}"></script>
     <!-- 调用相册展示插件的js文件 结束-->
 
+    <!-- 显示图片展示插件 -->
     <script type="text/javascript">
         jQuery(document).ready(function($){
             $( '#gallery' ).jGallery(
@@ -130,6 +134,7 @@
         });
 
     </script>
+    <!-- 显示图片展示插件 结束-->
 
     <!-- 关注用的Ajax函数 -->
     <script type="text/javascript">
