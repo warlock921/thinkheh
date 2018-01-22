@@ -36,6 +36,8 @@ class UserInfo(models.Model):
 	address = models.CharField(max_length=100,blank=True)
 	#自我介绍
 	aboutme = models.TextField(blank=True)
+	#用户头像
+	photo = models.ImageField(upload_to='ImgCrop/images/%Y/%m/%d',blank=True)
 	
 	class Meta:
 		verbose_name = "用户信息管理"

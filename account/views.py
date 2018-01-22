@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from .models import UserInfo,UserProfile,FollowUser
 from .forms import LoginForm,RegistrationForm,UserProfileForm,UserInfoForm,UserForm
 from django.contrib.auth.models import User
-
+from slugify import slugify
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
@@ -119,12 +119,32 @@ def myself_edit(request):
 		userinfo_form = UserInfoForm(initial={"company":userinfo.company,"SUC_code":userinfo.SUC_code,"profession":userinfo.profession,"address":userinfo.address,"aboutme":userinfo.aboutme})
 		return render(request, "account/myself_edit.html", {"user_form":user_form, "userprofile_form":userprofile_form, "userinfo_form":userinfo_form})
 
+#用户列表视图
 @login_required(login_url='/account/login')
 def user_list(request):
 	users = User.objects.filter(is_active=True)
 	userinfos = UserInfo.objects.all()
 	return render(request,"account/list.html",{"users":users,"userinfos":userinfos})
 
+#用户头像视图
+@login_required(login_url='/account/login')
+def my_image(request):
+	if request.method == 'POST':
+		#img = request.POST['img']
+		image_file = request.FILES.get('imgfile')
+		print(image_file)
+		new_filename = "{0}.{1}".format(slugify((image_file.name).rsplit('.',1)[0]),(image_file.name).rsplit('.',1)[1].lower())
+		# #将组装好的新图片名称，赋值给当前上传的图片，修改名称
+		image_file.name = new_filename
+		print(image_file)
+		userinfo = UserInfo.objects.get(user=request.user.id)
+		userinfo.photo = image_file
+		userinfo.save()
+		return HttpResponse("1")
+	else:
+		return render(request,'account/imagecrop.html')
+
+#用户关注视图函数
 @csrf_exempt
 @require_POST
 @login_required(login_url='/account/login')

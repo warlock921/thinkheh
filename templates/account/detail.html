@@ -81,9 +81,15 @@
     			</div>
     		</div>
     		<div class="col-md-6">
-    			<div style="margin-right: 100px"><img src="{% static 'images/timg.jpg' %}" class="img-circle" width="270px" id="my_photo"></div>
+                <div style="margin-right: 100px">
+                    {% if userinfo.photo %}
+                        <img src="{{userinfo.photo.url}}" class="img-circle" width="270px" id="my_photo">
+                    {% else %}
+                        <img src="{% static 'ImgCrop/images/avatar.png' %}" class="img-circle" width="270px" id="my_photo">
+                    {% endif %}    
+                </div>
                 <div style="margin-right: 100px"><button class="btn btn-primary btn-lg" id="upload_image" onclick="upload_image_layer()">上传我的照片</button></div>
-    		</div>
+            </div>
     	</div>
         
         <div class="row">
@@ -113,6 +119,16 @@
 
     <!-- 显示图片展示插件 -->
     <script type="text/javascript">
+        //上传图片js函数
+        function upload_image_layer(){
+            layer.open({
+                title:"上传头像",
+                area:['1024px','800px'],
+                type:2,
+                content:"{% url 'account:my_image' %}",
+            });
+        }
+
         jQuery(document).ready(function($){
             $( '#gallery' ).jGallery(
             {
