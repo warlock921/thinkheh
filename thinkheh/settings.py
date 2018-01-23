@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'actions',
     'imageload',
     'sorl.thumbnail',
+    'course',
 ]
 
 MIDDLEWARE = [

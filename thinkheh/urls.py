@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^account/',include('account.urls', namespace='account', app_name='account')),
     url(r'^article/',include('article.urls', namespace='article', app_name='article')),
     url(r'^imageload/',include('imageload.urls', namespace='imageload', app_name='imageload')),
+    url(r'^course/',include('course.urls',namespace='course', app_name='course')),
 ]

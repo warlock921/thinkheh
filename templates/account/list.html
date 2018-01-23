@@ -9,7 +9,17 @@
       {% if request.user != user and user.is_superuser == False %}
         <div class="col-md-3">
           <div class="thumbnail">
-            <a href="{% url 'account:user_detail' user.username%}"><img src="{% static 'images/timg.jpg' %}" ></a>
+            <a href="{% url 'account:user_detail' user.username%}">
+              {% for userinfo in userinfos %}
+                {% if user.id == userinfo.user_id %}
+                  {% if userinfo.photo %}
+                      <img src="{{userinfo.photo.url}}" style="width: 180px;height: 180px" >
+                  {% else %}
+                      <img src="{% static 'ImgCrop/images/avatar.png' %}" style="width: 180px" >
+                  {% endif %}
+                    
+                {% endif %}  
+              {% endfor %}</a>
             <div class="caption">
               <h3>{{ user.username }}</h3>
               <hr>

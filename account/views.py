@@ -131,16 +131,16 @@ def user_list(request):
 def my_image(request):
 	if request.method == 'POST':
 		#img = request.POST['img']
-		image_file = request.FILES.get('imgfile')
+		image_file = request.FILES.get('croppedImage')
 		print(image_file)
-		new_filename = "{0}.{1}".format(slugify((image_file.name).rsplit('.',1)[0]),(image_file.name).rsplit('.',1)[1].lower())
-		# #将组装好的新图片名称，赋值给当前上传的图片，修改名称
-		image_file.name = new_filename
+		# new_filename = "{0}.{1}".format(slugify((image_file.name).rsplit('.',1)[0]),(image_file.name).rsplit('.',1)[1].lower())
+		# # #将组装好的新图片名称，赋值给当前上传的图片，修改名称
+		# image_file.name = new_filename
 		print(image_file)
 		userinfo = UserInfo.objects.get(user=request.user.id)
 		userinfo.photo = image_file
 		userinfo.save()
-		return HttpResponse("1")
+		return JsonResponse({'status':'1'})
 	else:
 		return render(request,'account/imagecrop.html')
 
