@@ -1,0 +1,13 @@
+{% extends "article/base.html" %}
+{% block title %}
+    删除新闻专题
+{% endblock title %}
+{% block content %}
+    <div>
+    	<form action="" method="post">{% csrf_token %}
+    		<p>您确定要删除"{{ object.title }}"?</p>
+    		<input type="submit" value="确认" class="btn btn-primary" />
+    		<input type="reset" value="取消" class="btn btn-primary" />
+    	</form>
+    </div>
+{% endblock content %}

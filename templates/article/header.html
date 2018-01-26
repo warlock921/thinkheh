@@ -13,7 +13,9 @@
         <li><a class="navbar-brand" href="{% url 'mainsite:mainsite_title' %}">首页</a></li>
         <li><a class="navbar-brand" href="{% url 'article:article_list' %}">问答管理</a></li>
         <li><a class="navbar-brand" href="{% url 'imageload:list_images' %}">企业相册管理</a></li>
+        {% if user.is_superuser %}
         <li><a class="navbar-brand" href="{% url 'course:manage_course' %}">视频新闻管理</a></li>
+        {% endif %}
       </ul>
     </div>
     <div id="navbar" class="navbar-collapse collapse navbar-right">
